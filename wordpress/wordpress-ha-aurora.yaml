@@ -196,47 +196,47 @@ Parameters:
 Mappings:
   RegionMap:
     'af-south-1':
-      AMI: 'ami-050312a64b6fd7ad9'
+      AMI: 'ami-0c4d743431fd7abbf'
     'eu-north-1':
-      AMI: 'ami-076c2ee28e3f9f38e'
+      AMI: 'ami-00517306b63c4628c'
     'ap-south-1':
-      AMI: 'ami-068d43a544160b7ef'
+      AMI: 'ami-00bf4ae5a7909786c'
     'eu-west-3':
-      AMI: 'ami-0575fc648136871a1'
+      AMI: 'ami-062fdd189639d3e93'
     'eu-west-2':
-      AMI: 'ami-01c835443b86fe988'
+      AMI: 'ami-03ac5a9b225e99b02'
     'eu-south-1':
-      AMI: 'ami-0458384bd8b7c17d4'
+      AMI: 'ami-0737455407c1986d6'
     'eu-west-1':
-      AMI: 'ami-0d712b3e6e1f798ef'
+      AMI: 'ami-058b1b7fe545997ae'
     'ap-northeast-3':
-      AMI: 'ami-039fe1eba495c966f'
+      AMI: 'ami-07420201371095f81'
     'ap-northeast-2':
-      AMI: 'ami-081511b9e3af53902'
+      AMI: 'ami-0b827f3319f7447c6'
     'me-south-1':
-      AMI: 'ami-0a70a3362a013de22'
+      AMI: 'ami-0e3b5e402e6d8bb6b'
     'ap-northeast-1':
-      AMI: 'ami-0bc8ae3ec8e338cbc'
+      AMI: 'ami-0b276ad63ba2d6009'
     'sa-east-1':
-      AMI: 'ami-0ca43e15336e41670'
+      AMI: 'ami-05e809fbeee38dd5e'
     'ca-central-1':
-      AMI: 'ami-09d75fc0586859f7a'
+      AMI: 'ami-0db72f413fc1ddb2a'
     'ap-east-1':
-      AMI: 'ami-093d73f27794c5b1d'
+      AMI: 'ami-0578411ef03029669'
     'ap-southeast-1':
-      AMI: 'ami-0ba0ce0c11eb723a1'
+      AMI: 'ami-0e5182fad1edfaa68'
     'ap-southeast-2':
-      AMI: 'ami-0b3d7a5ecc2daba4c'
+      AMI: 'ami-0c9fe0dec6325a30c'
     'eu-central-1':
-      AMI: 'ami-013fffc873b1eaa1c'
+      AMI: 'ami-00f22f6155d6d92c5'
     'us-east-1':
-      AMI: 'ami-0533f2ba8a1995cf9'
+      AMI: 'ami-0dc2d3e4c0f9ebd18'
     'us-east-2':
-      AMI: 'ami-089c6f2e3866f0f14'
+      AMI: 'ami-0233c2d874b811deb'
     'us-west-1':
-      AMI: 'ami-0a245a00f741d6301'
+      AMI: 'ami-0ed05376b59b90e46'
     'us-west-2':
-      AMI: 'ami-05b622b5fa0269787'
+      AMI: 'ami-0dc8f589abe99f538'
 Conditions:
   HasPermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, '']]
   HasKeyName: !Not [!Equals [!Ref WebServerKeyName, '']]
@@ -895,7 +895,7 @@ Resources:
         extras:
           commands:
             'a_enable_php':
-              command: 'amazon-linux-extras enable php7.2'
+              command: 'amazon-linux-extras enable php7.2 && yum -y clean metadata'
               test: "! grep -Fxq '[amzn2extra-php7.2]' /etc/yum.repos.d/amzn2-extras.repo"
         config:
           packages:
@@ -947,9 +947,9 @@ Resources:
                   # ensure than only one machine installs wp
                   if mkdir /var/www/lock; then
                     cd /var/www/html
-                    wget --quiet --timeout=60 --output-document=wp-cli.phar https://github.com/wp-cli/wp-cli/releases/download/v2.4.0/wp-cli-2.4.0.phar
+                    wget --quiet --timeout=60 --output-document=wp-cli.phar https://github.com/wp-cli/wp-cli/releases/download/v2.5.0/wp-cli-2.5.0.phar
                     if ! php wp-cli.phar core is-installed --allow-root; then
-                      php wp-cli.phar core download --allow-root --version=5.7.1
+                      php wp-cli.phar core download --allow-root --version=5.7.2
                       php wp-cli.phar core config --dbname='wordpress' --dbuser='wordpress' --dbpass='${DBMasterUserPassword}' --dbhost='${DBHost}' --allow-root
                       php wp-cli.phar core install --url='https://${DomainName}' --title='${BlogTitle}' --admin_user='${BlogAdminUsername}' --admin_password='${BlogAdminPassword}' --admin_email='${BlogAdminEMail}' --skip-email --allow-root
                       sed -i "/$table_prefix = 'wp_';/a\$_SERVER['HTTPS'] = 'on';" /var/www/html/wp-config.php

@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/widdix/aws-cf-templates.svg?branch=master)](https://travis-ci.org/widdix/aws-cf-templates)
-
 # Free Templates for AWS CloudFormation
 Find the documentation for the **latest stable release** here: https://templates.cloudonaut.io/en/stable/
 
@@ -23,15 +21,10 @@ Learn more: https://github.com/cfn-modules/docs
 All templates are published under Apache License Version 2.0.
 
 ## Sponsors
-
 [Become a sponsor](https://github.com/sponsors/widdix) via GitHub Sponsors.
-
----
-
-Are you in need of an urgent bug fix or important feature request? [Contact us](mailto:hello@widdix.net) to sponsor a feature or bug fix.
 
 ## Training and Consulting
 Do you want to accelerate your start with AWS CloudFormation and our templates? We do offer remote and on-site training for you and your team. Are you looking for guidance on how to use or adapt our templates to your use case? We offer consulting services as well. [Contact us](mailto:hello@widdix.net), and we’ll accelerate your project.
 
 ## About
-A [cloudonaut.io](https://cloudonaut.io/templates-for-aws-cloudformation/) project. Engineered by [widdix](https://widdix.net).
+A [cloudonaut.io](https://cloudonaut.io/) project. Engineered by [widdix](https://widdix.net).

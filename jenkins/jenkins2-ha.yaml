@@ -48,6 +48,7 @@ Metadata:
       - MasterInstanceType
       - MasterAdminPassword
       - MasterLogsRetentionInDays
+      - MasterVolumeSize
       - MasterLoadBalancerIdleTimeout
     - Label:
         default: 'Permission Parameters'
@@ -166,47 +167,47 @@ Parameters:
 Mappings:
   RegionMap:
     'af-south-1':
-      AMI: 'ami-050312a64b6fd7ad9'
+      AMI: 'ami-0c4d743431fd7abbf'
     'eu-north-1':
-      AMI: 'ami-076c2ee28e3f9f38e'
+      AMI: 'ami-00517306b63c4628c'
     'ap-south-1':
-      AMI: 'ami-068d43a544160b7ef'
+      AMI: 'ami-00bf4ae5a7909786c'
     'eu-west-3':
-      AMI: 'ami-0575fc648136871a1'
+      AMI: 'ami-062fdd189639d3e93'
     'eu-west-2':
-      AMI: 'ami-01c835443b86fe988'
+      AMI: 'ami-03ac5a9b225e99b02'
     'eu-south-1':
-      AMI: 'ami-0458384bd8b7c17d4'
+      AMI: 'ami-0737455407c1986d6'
     'eu-west-1':
-      AMI: 'ami-0d712b3e6e1f798ef'
+      AMI: 'ami-058b1b7fe545997ae'
     'ap-northeast-3':
-      AMI: 'ami-039fe1eba495c966f'
+      AMI: 'ami-07420201371095f81'
     'ap-northeast-2':
-      AMI: 'ami-081511b9e3af53902'
+      AMI: 'ami-0b827f3319f7447c6'
     'me-south-1':
-      AMI: 'ami-0a70a3362a013de22'
+      AMI: 'ami-0e3b5e402e6d8bb6b'
     'ap-northeast-1':
-      AMI: 'ami-0bc8ae3ec8e338cbc'
+      AMI: 'ami-0b276ad63ba2d6009'
     'sa-east-1':
-      AMI: 'ami-0ca43e15336e41670'
+      AMI: 'ami-05e809fbeee38dd5e'
     'ca-central-1':
-      AMI: 'ami-09d75fc0586859f7a'
+      AMI: 'ami-0db72f413fc1ddb2a'
     'ap-east-1':
-      AMI: 'ami-093d73f27794c5b1d'
+      AMI: 'ami-0578411ef03029669'
     'ap-southeast-1':
-      AMI: 'ami-0ba0ce0c11eb723a1'
+      AMI: 'ami-0e5182fad1edfaa68'
     'ap-southeast-2':
-      AMI: 'ami-0b3d7a5ecc2daba4c'
+      AMI: 'ami-0c9fe0dec6325a30c'
     'eu-central-1':
-      AMI: 'ami-013fffc873b1eaa1c'
+      AMI: 'ami-00f22f6155d6d92c5'
     'us-east-1':
-      AMI: 'ami-0533f2ba8a1995cf9'
+      AMI: 'ami-0dc2d3e4c0f9ebd18'
     'us-east-2':
-      AMI: 'ami-089c6f2e3866f0f14'
+      AMI: 'ami-0233c2d874b811deb'
     'us-west-1':
-      AMI: 'ami-0a245a00f741d6301'
+      AMI: 'ami-0ed05376b59b90e46'
     'us-west-2':
-      AMI: 'ami-05b622b5fa0269787'
+      AMI: 'ami-0dc8f589abe99f538'
 Conditions:
   HasPermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, '']]
   HasKeyName: !Not [!Equals [!Ref KeyName, '']]
@@ -829,15 +830,15 @@ Resources:
         extras:
           commands:
             'a_enable_docker':
-              command: 'amazon-linux-extras enable docker=18.06.1'
+              command: 'amazon-linux-extras enable docker=18.06.1 && yum -y clean metadata'
               test: "! grep -Fxq '[amzn2extra-docker]' /etc/yum.repos.d/amzn2-extras.repo"
             'b_enable_corretto8':
-              command: 'amazon-linux-extras enable corretto8=1.8.0_202'
+              command: 'amazon-linux-extras enable corretto8=1.8.0_202 && yum -y clean metadata'
               test: "! grep -Fxq '[amzn2extra-corretto8]' /etc/yum.repos.d/amzn2-extras.repo"
         install:
           packages:
             rpm:
-              jenkins: 'http://ftp-chi.osuosl.org/pub/jenkins/redhat-stable/jenkins-2.277.3-1.1.noarch.rpm'
+              jenkins: 'http://ftp-chi.osuosl.org/pub/jenkins/redhat-stable/jenkins-2.289.2-1.1.noarch.rpm'
             yum:
               'java-1.8.0-amazon-corretto': []
           files:
@@ -870,25 +871,25 @@ Resources:
                 ensureRunning: !If [HasSystemsManagerAccess, true, false]
         setup:
           files:
-            '/root/plugins.txt':
+            '/root/plugins.txt': # list updates: java -jar /opt/jenkins-plugin-manager.jar --war /usr/lib/jenkins/jenkins.war --plugin-download-directory /var/lib/jenkins/plugins --plugin-file /root/plugins.txt --available-updates
               content: |
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/jqs-monitoring/1.4/jqs-monitoring.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/ant/1.11/ant.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/build-timeout/1.20/build-timeout.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/docker-workflow/1.23/docker-workflow.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/credentials-binding/1.23/credentials-binding.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/email-ext/2.73/email-ext.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/envinject/2.3.0/envinject.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/github-organization-folder/1.6/github-organization-folder.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/gradle/1.36/gradle.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/workflow-aggregator/2.6/workflow-aggregator.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/pipeline-maven/3.8.2/pipeline-maven.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/ssh-slaves/1.31.2/ssh-slaves.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/subversion/2.13.1/subversion.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/timestamper/1.11.5/timestamper.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/ws-cleanup/0.38/ws-cleanup.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/pipeline-aws/1.42/pipeline-aws.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/http_request/1.8.26/http_request.hpi
+                jqs-monitoring:1.4
+                ant:1.11
+                build-timeout:1.20
+                docker-workflow:1.26
+                credentials-binding:1.26
+                email-ext:2.83
+                envinject:2.4.0
+                github-organization-folder:1.6
+                gradle:1.36
+                workflow-aggregator:2.6
+                pipeline-maven:3.10.0
+                ssh-slaves:1.32.0
+                subversion:2.14.4
+                timestamper:1.13
+                ws-cleanup:0.39
+                pipeline-aws:1.43
+                http_request:1.9.0
               mode: '000400'
               owner: root
               group: root
@@ -914,19 +915,22 @@ Resources:
             'g_await_jenkins':
               command: 'until $(curl --silent --max-time 60 -o /dev/null -I -f -u "admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)" http://localhost:8080/cli/); do printf "."; sleep 1; done'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'h_install_plugins':
-              command: 'java -jar /opt/jenkins-cli.jar -s "http://localhost:8080/" -auth "admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)" install-plugin $(cat /root/plugins.txt | tr "\n" " ")'
+            'h_download_jenkins_plugin_manager':
+              command: 'wget --quiet --timeout=60 --output-document=/opt/jenkins-plugin-manager.jar https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/2.10.0/jenkins-plugin-manager-2.10.0.jar'
+              est: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
+            'i_install_plugins':
+              command: 'java -jar /opt/jenkins-plugin-manager.jar --war /usr/lib/jenkins/jenkins.war --plugin-download-directory /var/lib/jenkins/plugins --plugin-file /root/plugins.txt --latest=false'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'i_restart_jenkins':
+            'j_restart_jenkins':
               command: 'service jenkins restart'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'j_await_jenkins':
+            'k_await_jenkins':
               command: 'until $(curl --silent --max-time 60 -o /dev/null -I -f -u "admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)" http://localhost:8080/cli/); do printf "."; sleep 1; done'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'k_set_admin_password':
+            'l_set_admin_password':
               command: !Sub 'echo $''jenkins.model.Jenkins.instance.securityRealm.createAccount("admin", \''${MasterAdminPassword}\'')'' | java -jar /opt/jenkins-cli.jar -s "http://localhost:8080/" -auth "admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)" groovy ='
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'l_stop_jenkins':
+            'm_stop_jenkins':
               command: 'service jenkins stop'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
             'x_create_setup_done_file':
