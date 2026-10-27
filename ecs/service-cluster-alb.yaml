@@ -44,6 +44,7 @@ Metadata:
       - MaxCapacity
       - MinCapacity
       - HealthCheckGracePeriod
+      - HealthCheckPath
     - Label:
         default: 'Permission Parameters'
       Parameters:
@@ -133,6 +134,10 @@ Parameters:
     Default: 60
     MinValue: 0
     MaxValue: 1800
+  HealthCheckPath:
+    Description: 'Path of health check'
+    Type: String
+    Default: '/'
 Conditions:
   HasPermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, '']]
   HasLoadBalancerHttps: !Equals [!Ref LoadBalancerHttps, 'true']
@@ -191,7 +196,7 @@ Resources:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
       HealthCheckIntervalSeconds: 15
-      HealthCheckPath: '/'
+      HealthCheckPath: !Ref HealthCheckPath
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 10
       HealthyThresholdCount: 2
@@ -319,6 +324,9 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 50
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
       DesiredCount: !Ref DesiredCount
       HealthCheckGracePeriodSeconds: !Ref HealthCheckGracePeriod
       LoadBalancers:
@@ -357,7 +365,7 @@ Resources:
     Properties:
       EventPattern:
         source:
-        - 'aws.ec2'
+        - 'aws.ecs'
         'detail-type':
         - 'ECS Service Action'
         resources:

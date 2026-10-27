@@ -447,7 +447,7 @@ Resources:
         - HasProxyImage
         - Name: proxy
           Image: !Ref ProxyImage
-          Command: !If [HasProxyCommand, !Ref ProxyCommand, !Ref 'AWS::NoValue']
+          Command: !If [HasProxyCommand, [!Ref ProxyCommand], !Ref 'AWS::NoValue']
           PortMappings:
           - ContainerPort: !Ref ProxyPort
             Protocol: tcp
@@ -484,7 +484,7 @@ Resources:
         - HasSidecarImage
         - Name: sidecar
           Image: !Ref SidecarImage
-          Command: !If [HasSidecarCommand, !Ref SidecarCommand, !Ref 'AWS::NoValue']
+          Command: !If [HasSidecarCommand, [!Ref SidecarCommand], !Ref 'AWS::NoValue']
           PortMappings:
           - ContainerPort: !Ref SidecarPort
             Protocol: tcp
@@ -541,6 +541,9 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
       DesiredCount: !Ref DesiredCount
       ServiceRegistries:
       - ContainerName: !If [HasProxyImage, proxy, app]
@@ -582,7 +585,7 @@ Resources:
     Properties:
       EventPattern:
         source:
-        - 'aws.ec2'
+        - 'aws.ecs'
         'detail-type':
         - 'ECS Service Action'
         resources:

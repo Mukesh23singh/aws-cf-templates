@@ -48,6 +48,7 @@ Metadata:
       - MasterInstanceType
       - MasterAdminPassword
       - MasterLogsRetentionInDays
+      - MasterVolumeSize
       - MasterLoadBalancerIdleTimeout
     - Label:
         default: 'Permission Parameters'
@@ -165,48 +166,64 @@ Parameters:
     Default: 'cron(0 5 ? * * *)'
 Mappings:
   RegionMap:
-    'af-south-1':
-      AMI: 'ami-050312a64b6fd7ad9'
-    'eu-north-1':
-      AMI: 'ami-076c2ee28e3f9f38e'
+    'ap-south-2':
+      AMI: 'ami-0ab51832ad0357955'
     'ap-south-1':
-      AMI: 'ami-068d43a544160b7ef'
-    'eu-west-3':
-      AMI: 'ami-0575fc648136871a1'
-    'eu-west-2':
-      AMI: 'ami-01c835443b86fe988'
+      AMI: 'ami-0d6eab68a2aa4419b'
     'eu-south-1':
-      AMI: 'ami-0458384bd8b7c17d4'
-    'eu-west-1':
-      AMI: 'ami-0d712b3e6e1f798ef'
-    'ap-northeast-3':
-      AMI: 'ami-039fe1eba495c966f'
-    'ap-northeast-2':
-      AMI: 'ami-081511b9e3af53902'
-    'me-south-1':
-      AMI: 'ami-0a70a3362a013de22'
-    'ap-northeast-1':
-      AMI: 'ami-0bc8ae3ec8e338cbc'
-    'sa-east-1':
-      AMI: 'ami-0ca43e15336e41670'
+      AMI: 'ami-0c17f1490200f1b98'
+    'eu-south-2':
+      AMI: 'ami-0a8f09e218768d19d'
+    'me-central-1':
+      AMI: 'ami-07e91783d8a16e1f2'
+    'il-central-1':
+      AMI: 'ami-04ee358ea26a28621'
     'ca-central-1':
-      AMI: 'ami-09d75fc0586859f7a'
-    'ap-east-1':
-      AMI: 'ami-093d73f27794c5b1d'
-    'ap-southeast-1':
-      AMI: 'ami-0ba0ce0c11eb723a1'
-    'ap-southeast-2':
-      AMI: 'ami-0b3d7a5ecc2daba4c'
+      AMI: 'ami-06aa9bf8acd13295e'
     'eu-central-1':
-      AMI: 'ami-013fffc873b1eaa1c'
-    'us-east-1':
-      AMI: 'ami-0533f2ba8a1995cf9'
-    'us-east-2':
-      AMI: 'ami-089c6f2e3866f0f14'
+      AMI: 'ami-0b26dd07b92ba60b5'
+    'eu-central-2':
+      AMI: 'ami-08b6d5c9e5f65725a'
     'us-west-1':
-      AMI: 'ami-0a245a00f741d6301'
+      AMI: 'ami-0b301738029f9f48e'
     'us-west-2':
-      AMI: 'ami-05b622b5fa0269787'
+      AMI: 'ami-076e3756930a93fbb'
+    'af-south-1':
+      AMI: 'ami-04c86004365f50376'
+    'eu-north-1':
+      AMI: 'ami-05668410ca8bbacb3'
+    'eu-west-3':
+      AMI: 'ami-0e240183bb3096e67'
+    'eu-west-2':
+      AMI: 'ami-08ceb58c67626d304'
+    'eu-west-1':
+      AMI: 'ami-064857453c447bed5'
+    'ap-northeast-3':
+      AMI: 'ami-0806b1119517557f0'
+    'ap-northeast-2':
+      AMI: 'ami-00252d017d66f9cdd'
+    'me-south-1':
+      AMI: 'ami-05263463386d9b3a5'
+    'ap-northeast-1':
+      AMI: 'ami-08aa3b50f80805e20'
+    'sa-east-1':
+      AMI: 'ami-0cd4a737dad460342'
+    'ap-east-1':
+      AMI: 'ami-0a97c2677505cda75'
+    'ca-west-1':
+      AMI: 'ami-01c7593ec24183809'
+    'ap-southeast-1':
+      AMI: 'ami-083068d1edaf8af18'
+    'ap-southeast-2':
+      AMI: 'ami-094ff1d74ab636074'
+    'ap-southeast-3':
+      AMI: 'ami-08990191cc9b187ac'
+    'ap-southeast-4':
+      AMI: 'ami-0d9704c67691a5331'
+    'us-east-1':
+      AMI: 'ami-046eeba8a7f7bbefd'
+    'us-east-2':
+      AMI: 'ami-02c4f64d0cbab1731'
 Conditions:
   HasPermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, '']]
   HasKeyName: !Not [!Equals [!Ref KeyName, '']]
@@ -225,7 +242,6 @@ Conditions:
   HasManagedPolicyArns: !Not [!Equals [!Ref ManagedPolicyArns, '']]
   HasEFSProvisionedThroughput: !Not [!Condition HasNotEFSProvisionedThroughput]
   HasNotEFSProvisionedThroughput: !Equals [!Ref EFSProvisionedThroughputInMibps, '0']
-  HasAlertTopicAndEFSProvisionedThroughput: !And [!Condition HasAlertTopic, !Condition HasEFSProvisionedThroughput]
   HasAlertTopicAndNotEFSProvisionedThroughput: !And [!Condition HasAlertTopic, !Condition HasNotEFSProvisionedThroughput]
   HasEFSBackupRetentionPeriod: !Not [!Equals [!Ref EFSBackupRetentionPeriod, 0]]
 Resources:
@@ -259,7 +275,7 @@ Resources:
       Period: 600
       EvaluationPeriods: 1
       ComparisonOperator: LessThanThreshold
-      Threshold: 192000000000 # 192 GB in Bytes (last hour where you can burst at 100 MB/sec)
+      Threshold: 192000000000 # 192 GB in Bytes (last ~30 minutes where you can burst at 100 MB/sec)
       AlarmActions:
       - {'Fn::ImportValue': !Sub '${ParentAlertStack}-TopicARN'}
       Dimensions:
@@ -282,23 +298,56 @@ Resources:
       Dimensions:
       - Name: FileSystemId
         Value: !Ref MasterStorage
-  MasterStorageThroughputAlarm:
-    Condition: HasAlertTopicAndEFSProvisionedThroughput
+  MasterStorageThroughputAlarm: # https://docs.aws.amazon.com/efs/latest/ug/monitoring-metric-math.html#metric-math-throughput-utilization
+    Condition: HasAlertTopic
     Type: 'AWS::CloudWatch::Alarm'
     Properties:
-      AlarmDescription: 'Reached 90% of the provisioned throughput over last 10 minutes.'
-      Namespace: 'AWS/EFS'
-      MetricName: TotalIOBytes
-      Statistic: Sum
-      Period: 600
-      EvaluationPeriods: 1
+      AlarmDescription: 'Reached 80% of the permitted throughput 6 times over last 10 minutes.'
+      Metrics:
+      - Id: m1
+        Label: MeteredIOBytes
+        MetricStat:
+          Metric:
+            Namespace: 'AWS/EFS'
+            MetricName: MeteredIOBytes
+            Dimensions:
+            - Name: FileSystemId
+              Value: !Ref MasterStorage
+          Period: 60
+          Stat: Sum
+          Unit: Bytes
+        ReturnData: false
+      - Id: m2
+        Label: PermittedThroughput
+        MetricStat:
+          Metric:
+            Namespace: 'AWS/EFS'
+            MetricName: PermittedThroughput
+            Dimensions:
+            - Name: FileSystemId
+              Value: !Ref MasterStorage
+          Period: 60
+          Stat: Sum
+          Unit: 'Bytes/Second'
+        ReturnData: false
+      - Expression: '(m1/1048576)/PERIOD(m1)'
+        Id: e1
+        Label: e1
+        ReturnData: false
+      - Expression: 'm2/1048576'
+        Id: e2
+        Label: e2
+        ReturnData: false
+      - Expression: '((e1)*100)/(e2)'
+        Id: e3
+        Label: 'Throughput utilization (%)'
+        ReturnData: true
+      EvaluationPeriods: 10
+      DatapointsToAlarm: 6
       ComparisonOperator: GreaterThanThreshold
-      Threshold: !GetAtt MaxThroughputCalculator.Threshold
+      Threshold: 80
       AlarmActions:
       - {'Fn::ImportValue': !Sub '${ParentAlertStack}-TopicARN'}
-      Dimensions:
-      - Name: FileSystemId
-        Value: !Ref MasterStorage
   MasterStorageMountTargetA:
     Type: 'AWS::EFS::MountTarget'
     Properties:
@@ -605,7 +654,7 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Init':
         configSets:
-          default: [awslogs, !If [HasIAMUserSSHAccess, ssh-access, !Ref 'AWS::NoValue'], mount, extras, install, setup, custom_before, run, custom_after]
+          default: [awslogs, !If [HasIAMUserSSHAccess, ssh-access, !Ref 'AWS::NoValue'], mount, extras, epel, dependencies, install, setup, custom_before, run, custom_after]
         awslogs:
           packages:
             yum:
@@ -829,17 +878,35 @@ Resources:
         extras:
           commands:
             'a_enable_docker':
-              command: 'amazon-linux-extras enable docker=18.06.1'
+              command: 'amazon-linux-extras enable docker=18.06.1 && yum -y clean metadata'
               test: "! grep -Fxq '[amzn2extra-docker]' /etc/yum.repos.d/amzn2-extras.repo"
-            'b_enable_corretto8':
-              command: 'amazon-linux-extras enable corretto8=1.8.0_202'
-              test: "! grep -Fxq '[amzn2extra-corretto8]' /etc/yum.repos.d/amzn2-extras.repo"
+            'b_enable_epel':
+              command: 'amazon-linux-extras enable epel=7.11 && yum -y clean metadata'
+              test: "! grep -Fxq '[amzn2extra-epel]' /etc/yum.repos.d/amzn2-extras.repo"
+        epel:
+          packages:
+            yum:
+              'epel-release': []
+          commands:
+            'a_disable_log4j_hotpatch': # Jenkins was never affected
+              command: 'systemctl mask log4j-cve-2021-44228-hotpatch'
+        dependencies:
+          packages:
+            yum:
+              'java-11-amazon-corretto-headless': []
+              'daemonize': []
+          files:
+            '/etc/systemd/system/jenkins.service.d/timeout.conf':
+              content: |
+                [Service]
+                TimeoutStartSec=300
+              mode: '000644'
+              owner: root
+              group: root
         install:
           packages:
             rpm:
-              jenkins: 'http://ftp-chi.osuosl.org/pub/jenkins/redhat-stable/jenkins-2.277.3-1.1.noarch.rpm'
-            yum:
-              'java-1.8.0-amazon-corretto': []
+              jenkins: 'https://ftp-chi.osuosl.org/pub/jenkins/redhat-stable/jenkins-2.426.3-1.1.noarch.rpm'
           files:
             '/etc/cfn/cfn-hup.conf':
               content: !Sub |
@@ -870,25 +937,26 @@ Resources:
                 ensureRunning: !If [HasSystemsManagerAccess, true, false]
         setup:
           files:
-            '/root/plugins.txt':
+            '/root/plugins.txt': # list updates: java -jar /opt/jenkins-plugin-manager.jar --war /usr/share/java/jenkins.war --plugin-download-directory /var/lib/jenkins/plugins --plugin-file /root/plugins.txt --available-updates
               content: |
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/jqs-monitoring/1.4/jqs-monitoring.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/ant/1.11/ant.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/build-timeout/1.20/build-timeout.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/docker-workflow/1.23/docker-workflow.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/credentials-binding/1.23/credentials-binding.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/email-ext/2.73/email-ext.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/envinject/2.3.0/envinject.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/github-organization-folder/1.6/github-organization-folder.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/gradle/1.36/gradle.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/workflow-aggregator/2.6/workflow-aggregator.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/pipeline-maven/3.8.2/pipeline-maven.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/ssh-slaves/1.31.2/ssh-slaves.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/subversion/2.13.1/subversion.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/timestamper/1.11.5/timestamper.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/ws-cleanup/0.38/ws-cleanup.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/pipeline-aws/1.42/pipeline-aws.hpi
-                http://ftp-chi.osuosl.org/pub/jenkins/plugins/http_request/1.8.26/http_request.hpi
+                jqs-monitoring:1.4
+                ant:475.vf34069fef73c
+                build-timeout:1.20
+                docker-workflow:1.28
+                credentials-binding:523.vd859a_4b_122e6
+                email-ext:2.88
+                envinject:2.854.vfa_1657078c97
+                github-organization-folder:1.6
+                gradle:1.38
+                workflow-aggregator:2.7
+                pipeline-maven:3.10.0
+                ssh-slaves:1.814.vc82988f54b_10
+                subversion:2.15.4
+                timestamper:1.17
+                ws-cleanup:0.42
+                pipeline-aws:1.43
+                http_request:1.15
+                cloudbees-folder:6.17
               mode: '000400'
               owner: root
               group: root
@@ -914,19 +982,22 @@ Resources:
             'g_await_jenkins':
               command: 'until $(curl --silent --max-time 60 -o /dev/null -I -f -u "admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)" http://localhost:8080/cli/); do printf "."; sleep 1; done'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'h_install_plugins':
-              command: 'java -jar /opt/jenkins-cli.jar -s "http://localhost:8080/" -auth "admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)" install-plugin $(cat /root/plugins.txt | tr "\n" " ")'
+            'h_download_jenkins_plugin_manager':
+              command: 'wget --quiet --timeout=60 --output-document=/opt/jenkins-plugin-manager.jar https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/2.12.14/jenkins-plugin-manager-2.12.14.jar'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'i_restart_jenkins':
+            'i_install_plugins':
+              command: 'java -jar /opt/jenkins-plugin-manager.jar --war /usr/share/java/jenkins.war --plugin-download-directory /var/lib/jenkins/plugins --plugin-file /root/plugins.txt --latest=false'
+              test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
+            'j_restart_jenkins':
               command: 'service jenkins restart'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'j_await_jenkins':
+            'k_await_jenkins':
               command: 'until $(curl --silent --max-time 60 -o /dev/null -I -f -u "admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)" http://localhost:8080/cli/); do printf "."; sleep 1; done'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'k_set_admin_password':
+            'l_set_admin_password':
               command: !Sub 'echo $''jenkins.model.Jenkins.instance.securityRealm.createAccount("admin", \''${MasterAdminPassword}\'')'' | java -jar /opt/jenkins-cli.jar -s "http://localhost:8080/" -auth "admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)" groovy ='
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
-            'l_stop_jenkins':
+            'm_stop_jenkins':
               command: 'service jenkins stop'
               test: '[ ! -f /var/lib/jenkins/setup_done.txt ]'
             'x_create_setup_done_file':
@@ -1047,66 +1118,6 @@ Resources:
       Dimensions:
       - Name: AutoScalingGroupName
         Value: !Ref MasterASG
-  LambdaRole:
-    Condition: HasEFSProvisionedThroughput
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: 'lambda.amazonaws.com'
-          Action: 'sts:AssumeRole'
-      PermissionsBoundary: !If [HasPermissionsBoundary, !Ref PermissionsBoundary, !Ref 'AWS::NoValue']
-  LambdaPolicy:
-    Condition: HasEFSProvisionedThroughput
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      Roles:
-      - !Ref LambdaRole
-      PolicyName: lambda
-      PolicyDocument:
-        Statement:
-        - Effect: Allow
-          Action:
-          - 'logs:CreateLogStream'
-          - 'logs:PutLogEvents'
-          Resource: !GetAtt 'LambdaLogGroup.Arn'
-  LambdaFunction: # needs no monitoring because it is used as a custom resource
-    Condition: HasEFSProvisionedThroughput
-    Type: 'AWS::Lambda::Function'
-    Properties:
-      Code:
-        ZipFile: |
-          'use strict';
-          const response = require('cfn-response');
-          exports.handler = (event, context, cb) => {
-            const throughput = parseInt(event.ResourceProperties.ThroughputInMibps, 10);
-            const threshold = Math.round(throughput * 1048576 * 600 * 0.9);
-            response.send(event, context, response.SUCCESS, {Threshold: threshold});
-          };
-      Handler: 'index.handler'
-      MemorySize: 128
-      Role: !GetAtt 'LambdaRole.Arn'
-      Runtime: 'nodejs12.x'
-      Timeout: 60
-  LambdaLogGroup:
-    Condition: HasEFSProvisionedThroughput
-    Type: 'AWS::Logs::LogGroup'
-    Properties:
-      LogGroupName: !Sub '/aws/lambda/${LambdaFunction}'
-      RetentionInDays: !Ref MasterLogsRetentionInDays
-  MaxThroughputCalculator:
-    Condition: HasEFSProvisionedThroughput
-    Type: 'Custom::MaxThroughputCalculator'
-    DependsOn:
-    - LambdaLogGroup
-    - LambdaPolicy
-    Version: '1.0'
-    Properties:
-      ThroughputInMibps: !Ref EFSProvisionedThroughputInMibps
-      ServiceToken: !GetAtt 'LambdaFunction.Arn'
   BackupVault: # cannot be deleted with data
     Condition: HasEFSBackupRetentionPeriod
     Type: 'AWS::Backup::BackupVault'

@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/widdix/aws-cf-templates.svg?branch=master)](https://travis-ci.org/widdix/aws-cf-templates)
-
 # Free Templates for AWS CloudFormation
 Find the documentation for the **latest stable release** here: https://templates.cloudonaut.io/en/stable/
 
@@ -19,19 +17,24 @@ Rapid CloudFormation: Modular, production ready, open source.
 
 Learn more: https://github.com/cfn-modules/docs
 
+## Commercial Products
+
+Besides our open-source projects, we also offer commercial products on the AWS Marketplace.
+
+* [bucketAV - Antivirus for Amazon S3 and Cloudflare R2](https://bucketav.com)
+* [attachmentAV - Antivirus for SaaS and cloud platforms](https://attachmentav.com)
+* [HyperEnv - Self-hosted GitHub Actions runners for AWS](https://hyperenv.com)
+* [marbot - Event-driven AWS Monitoring](https://marbot.io)
+
 ## License
 All templates are published under Apache License Version 2.0.
 
-## Sponsors
-
-[Become a sponsor](https://github.com/sponsors/widdix) via GitHub Sponsors.
-
----
-
-Are you in need of an urgent bug fix or important feature request? [Contact us](mailto:hello@widdix.net) to sponsor a feature or bug fix.
-
-## Training and Consulting
-Do you want to accelerate your start with AWS CloudFormation and our templates? We do offer remote and on-site training for you and your team. Are you looking for guidance on how to use or adapt our templates to your use case? We offer consulting services as well. [Contact us](mailto:hello@widdix.net), and we’ll accelerate your project.
-
 ## About
-A [cloudonaut.io](https://cloudonaut.io/templates-for-aws-cloudformation/) project. Engineered by [widdix](https://widdix.net).
+A [cloudonaut.io](https://cloudonaut.io/) project. Engineered by [widdix](https://widdix.net).
+
+## Release
+
+1. `git tag vX.Y.Z && git push --tags`
+2. Create Release in GitHub https://github.com/widdix/aws-ec2-ssh/releases/new
+    1. Select tag vX.Y.Z
+    2. Write a Change log by summarizing the commits since last release

@@ -1,0 +1,27 @@
+name: Lint
+on: [push, pull_request]
+permissions:
+  id-token: write
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  lint:
+    runs-on: ['hyperenv', 'medium-eu-west-1']
+    steps:
+    - uses: 'actions/checkout@v4'
+    - uses: 'actions/setup-python@v5'
+      with:
+        python-version: '3.13'
+    - name: yamlllint
+      run: |
+        pip install yamllint==1.37.1
+        yamllint .
+    - name: cfn-lint
+      run: |
+        pip install cfn-lint==1.44.0
+        cfn-lint -i E1022 E3003 E3014 E3026 E3032 W1011 W2001 W2010 W3045 W6001 W8003 -t '**/*.yaml'
+    - name: license
+      run: |
+        find . -type f -name '*.yaml' -not -name '.readthedocs.yaml' | while read file; do set -ex && grep -q 'LICENSE-2.0' "$file"; done;

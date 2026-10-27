@@ -21,6 +21,7 @@ Metadata:
         default: 'Config Parameters'
       Parameters:
       - DeliveryFrequency
+      - RecordingFrequency
       - RetentionPeriodInDays
       - ExternalConfigBucket
     - Label:
@@ -46,6 +47,13 @@ Parameters:
     - Six_Hours
     - Twelve_Hours
     - TwentyFour_Hours
+  RecordingFrequency:
+    Description: 'The recording frequency that AWS Config uses to record configuration changes.'
+    Type: String
+    Default: CONTINUOUS
+    AllowedValues:
+    - CONTINUOUS
+    - DAILY
   RetentionPeriodInDays:
     Description: 'Number of days AWS Config stores your historical information.'
     Type: Number
@@ -69,7 +77,12 @@ Resources:
   ConfigBucket:
     Condition: InternalBucket
     Type: 'AWS::S3::Bucket'
-    Properties: {}
+    Properties:
+      PublicAccessBlockConfiguration: # AWS Foundational Security Best Practices v1.0.0 S3.8
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
   ConfigBucketPolicy:
     Condition: InternalBucket
     Type: 'AWS::S3::BucketPolicy'
@@ -103,7 +116,7 @@ Resources:
     Type: 'AWS::IAM::Role'
     Properties:
       ManagedPolicyArns:
-      - 'arn:aws:iam::aws:policy/service-role/AWSConfigRole'
+      - 'arn:aws:iam::aws:policy/service-role/AWS_ConfigRole'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -139,7 +152,7 @@ Resources:
     Type: 'AWS::IAM::Role'
     Properties:
       ManagedPolicyArns:
-      - 'arn:aws:iam::aws:policy/service-role/AWSConfigRole'
+      - 'arn:aws:iam::aws:policy/service-role/AWS_ConfigRole'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -155,6 +168,8 @@ Resources:
       RecordingGroup:
         AllSupported: true
         IncludeGlobalResourceTypes: true
+      RecordingMode:
+        RecordingFrequency: !Ref RecordingFrequency
       RoleARN: !If [InternalBucket, !GetAtt 'ConfigurationRecorderRole.Arn', !GetAtt 'ExternalConfigurationRecorderRole.Arn']
   LambdaRole:
     Type: 'AWS::IAM::Role'
@@ -194,28 +209,27 @@ Resources:
     Properties:
       Code:
         ZipFile: |
-          'use strict';
-          const AWS = require('aws-sdk');
           const response = require('cfn-response');
-          const config = new AWS.ConfigService({apiVersion: '2014-11-12'});
+          const { ConfigServiceClient, DeleteRetentionConfigurationCommand, PutRetentionConfigurationCommand } = require('@aws-sdk/client-config-service');
+          const config = new ConfigServiceClient({apiVersion: '2014-11-12'});
           exports.handler = (event, context, cb) => {
             console.log(`Invoke: ${JSON.stringify(event)}`);
             function done(err) {
               if (err) {
                 console.log(`Error: ${JSON.stringify(err)}`);
-                response.send(event, context, response.FAILED, {});
+                response.send(event, context, response.FAILED, {}, event.LogicalResourceId);
               } else {
-                response.send(event, context, response.SUCCESS, {});
+                response.send(event, context, response.SUCCESS, {}, event.LogicalResourceId);
               }
             }
             if (event.RequestType === 'Delete') {
-              config.deleteRetentionConfiguration({
+              config.send(new DeleteRetentionConfigurationCommand({
                 RetentionConfigurationName: 'default'
-              }, done);
+              }), done);
             } else if (event.RequestType === 'Create' || event.RequestType === 'Update') {
-              config.putRetentionConfiguration({
+              config.send(new PutRetentionConfigurationCommand({
                 RetentionPeriodInDays: parseInt(event.ResourceProperties.RetentionPeriodInDays, 10),
-              }, done);
+              }), done);
             } else {
               cb(new Error(`unsupported RequestType: ${event.RequestType}`));
             }
@@ -223,7 +237,7 @@ Resources:
       Handler: 'index.handler'
       MemorySize: 128
       Role: !GetAtt 'LambdaRole.Arn'
-      Runtime: 'nodejs12.x'
+      Runtime: 'nodejs22.x'
       Timeout: 60
   LambdaLogGroup:
     Type: 'AWS::Logs::LogGroup'

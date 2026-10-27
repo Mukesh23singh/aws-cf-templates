@@ -176,7 +176,7 @@ Parameters:
     MinValue: 8
     MaxValue: 1024
   MaintenanceWindowSchedule:
-    Description: 'SSM cron expressions to trigger the maintenace window for patch installation.'
+    Description: 'SSM cron expressions to trigger the maintenace window for patch installation (leave empty to disable).'
     Type: String
     Default: 'cron(0 5 ? * SUN *)'
   MaintenanceWindowScheduleTimezone:
@@ -200,10 +200,29 @@ Parameters:
   AmazonLinux2Version:
     Description: 'Version of Amazon Linux 2 to boot from the first time (ignored if RestoreImageId is set; select the latest version for new stacks; OS updates are enabled to patch the system).'
     Type: String
-    Default: '20191217.0'
-    AllowedValues: ['20210126.0', '20200917.0', '20200722.0', '20200520.1', '20200406.0', '20200304.0', '20200207.1', '20191217.0']
+    AllowedValues: ['20240109.0', '20230727.0', '20220316.0', '20220218.3', '20220218.1', '20211223.0', '20211005.0', '20210721.2', '20210617.0', '20210126.0', '20200917.0', '20200722.0', '20200520.1', '20200406.0', '20200304.0', '20200207.1', '20191217.0']
 Mappings:
   VersionMap:
+    '20240109.0':
+      Map: RegionMap202401090
+    '20230727.0':
+      Map: RegionMap202307270
+    '20220316.0':
+      Map: RegionMap202203160
+    '20220218.3':
+      Map: RegionMap202202183
+    '20220218.1':
+      Map: RegionMap202202181
+    '20220207.1':
+      Map: RegionMap202202071
+    '20211223.0':
+      Map: RegionMap202112230
+    '20211005.0':
+      Map: RegionMap202110050
+    '20210721.2':
+      Map: RegionMap202107212
+    '20210617.0':
+      Map: RegionMap202106170
     '20210126.0':
       Map: RegionMap202101260
     '20200917.0':
@@ -220,6 +239,474 @@ Mappings:
       Map: RegionMap202002071
     '20191217.0':
       Map: RegionMap201912170
+  RegionMap202401090:
+    'ap-south-2':
+      AMI: 'ami-0fd07010d91ec94ed'
+    'ap-south-1':
+      AMI: 'ami-0501e3547293b2db3'
+    'eu-south-1':
+      AMI: 'ami-064e641df9c88db1a'
+    'eu-south-2':
+      AMI: 'ami-03e38c7ccbe876512'
+    'me-central-1':
+      AMI: 'ami-098c0ce6c458f300e'
+    'il-central-1':
+      AMI: 'ami-06c7a65b4ba37244d'
+    'ca-central-1':
+      AMI: 'ami-024076c81e3291472'
+    'eu-central-1':
+      AMI: 'ami-08b47394fb4c462b9'
+    'eu-central-2':
+      AMI: 'ami-046f9d0ba1e596fe8'
+    'us-west-1':
+      AMI: 'ami-04918638df2143901'
+    'us-west-2':
+      AMI: 'ami-05c89af705fc8fb3c'
+    'af-south-1':
+      AMI: 'ami-060b324aa32c23562'
+    'eu-north-1':
+      AMI: 'ami-04c9ea0e72cda507a'
+    'eu-west-3':
+      AMI: 'ami-090f3b471c0bb9c7f'
+    'eu-west-2':
+      AMI: 'ami-018302178b8f5d0a6'
+    'eu-west-1':
+      AMI: 'ami-05e9a7830635fe160'
+    'ap-northeast-3':
+      AMI: 'ami-0c3613ae50638f6c0'
+    'ap-northeast-2':
+      AMI: 'ami-0819c049403b5aa6b'
+    'me-south-1':
+      AMI: 'ami-0c710a975841e684b'
+    'ap-northeast-1':
+      AMI: 'ami-022c3cb73fbed1cc7'
+    'sa-east-1':
+      AMI: 'ami-037cb310a4cd89c1c'
+    'ap-east-1':
+      AMI: 'ami-09f4076013f7a5cad'
+    'ca-west-1':
+      AMI: 'ami-07ebbc212c45de49d'
+    'ap-southeast-1':
+      AMI: 'ami-03d7c57e0f49d78d2'
+    'ap-southeast-2':
+      AMI: 'ami-02d628788b362146a'
+    'ap-southeast-3':
+      AMI: 'ami-05754d6f8b26b908c'
+    'ap-southeast-4':
+      AMI: 'ami-049fc5d0791fd7ead'
+    'us-east-1':
+      AMI: 'ami-04c0f9ef2f505b609'
+    'us-east-2':
+      AMI: 'ami-0118c442c801c0d26'
+  RegionMap202307270:
+    'ap-south-2':
+      AMI: 'ami-04f8325a87d5f48aa'
+    'ap-south-1':
+      AMI: 'ami-09c013f43d377d58f'
+    'eu-south-1':
+      AMI: 'ami-0c7c7644930eba1a7'
+    'eu-south-2':
+      AMI: 'ami-03b60fea72bb1e610'
+    'me-central-1':
+      AMI: 'ami-050acf810641746a6'
+    'il-central-1':
+      AMI: 'ami-03afadd42fbc12d32'
+    'ca-central-1':
+      AMI: 'ami-099bd9e136c68844f'
+    'eu-central-1':
+      AMI: 'ami-0da9b15995cbb8ccf'
+    'eu-central-2':
+      AMI: 'ami-0963383410b4eca6d'
+    'us-west-1':
+      AMI: 'ami-06d7d7527a85b8ac2'
+    'us-west-2':
+      AMI: 'ami-01f8103a2082c0718'
+    'af-south-1':
+      AMI: 'ami-00720c0475e6d5a80'
+    'eu-north-1':
+      AMI: 'ami-04ee945d34fc3fd9b'
+    'eu-west-3':
+      AMI: 'ami-0b97213e168b04272'
+    'eu-west-2':
+      AMI: 'ami-094c8c300ad90df1f'
+    'eu-west-1':
+      AMI: 'ami-0ce10bf92ed664c67'
+    'ap-northeast-3':
+      AMI: 'ami-0a733536aa984f0fd'
+    'ap-northeast-2':
+      AMI: 'ami-0b7f251f110d30ada'
+    'me-south-1':
+      AMI: 'ami-094b200242fac6f76'
+    'ap-northeast-1':
+      AMI: 'ami-0f38fb80a464efed4'
+    'sa-east-1':
+      AMI: 'ami-0d9cc0b30f468a828'
+    'ap-east-1':
+      AMI: 'ami-00a8518d8fc39b7eb'
+    'ap-southeast-1':
+      AMI: 'ami-0e3c27023e862efdd'
+    'ap-southeast-2':
+      AMI: 'ami-035f7875613395a08'
+    'ap-southeast-3':
+      AMI: 'ami-00401fec20e6eeb8e'
+    'ap-southeast-4':
+      AMI: 'ami-065a3a37c6048a214'
+    'us-east-1':
+      AMI: 'ami-09748abeb7370d1bc'
+    'us-east-2':
+      AMI: 'ami-0497047c3dbd4485e'
+  RegionMap202203160:
+    'af-south-1':
+      AMI: 'ami-01dacfb543597986e'
+    'eu-north-1':
+      AMI: 'ami-0dbef1af74414d054'
+    'ap-south-1':
+      AMI: 'ami-04a223c5825a793bc'
+    'eu-west-3':
+      AMI: 'ami-01df7c80e2aa60122'
+    'eu-west-2':
+      AMI: 'ami-0a4b5c4a6ada12bb0'
+    'eu-south-1':
+      AMI: 'ami-05bbd3b1a777dd4f6'
+    'eu-west-1':
+      AMI: 'ami-010c802cb2f348b54'
+    'ap-northeast-3':
+      AMI: 'ami-012b0e028ee9bb335'
+    'ap-northeast-2':
+      AMI: 'ami-09fee16f759d3c3a2'
+    'me-south-1':
+      AMI: 'ami-0f6426915cd915575'
+    'ap-northeast-1':
+      AMI: 'ami-0521a4a0a1329ff86'
+    'sa-east-1':
+      AMI: 'ami-0df679e2b2ce72667'
+    'ca-central-1':
+      AMI: 'ami-0cfc8f6b6d827ff08'
+    'ap-east-1':
+      AMI: 'ami-0d3881e59d6e28931'
+    'ap-southeast-1':
+      AMI: 'ami-02c62c1cc162ef9a1'
+    'ap-southeast-2':
+      AMI: 'ami-0916f5ee07e7b15d6'
+    'eu-central-1':
+      AMI: 'ami-056343e91872518f7'
+    'ap-southeast-3':
+      AMI: 'ami-06d59519532343357'
+    'us-east-1':
+      AMI: 'ami-03e0b06f01d45a4eb'
+    'us-east-2':
+      AMI: 'ami-09662e4f2b2fb67f9'
+    'us-west-1':
+      AMI: 'ami-052f64d0cd359fe1f'
+    'us-west-2':
+      AMI: 'ami-0eb324d928acca58a'
+  RegionMap202202183:
+    'af-south-1':
+      AMI: 'ami-08d292fff05be4fd7'
+    'eu-north-1':
+      AMI: 'ami-0cc56fdf12f1adbf6'
+    'ap-south-1':
+      AMI: 'ami-058927a80413afd9e'
+    'eu-west-3':
+      AMI: 'ami-000fb470705e9b427'
+    'eu-west-2':
+      AMI: 'ami-0127d411688545f05'
+    'eu-south-1':
+      AMI: 'ami-09bb171d034878fa6'
+    'eu-west-1':
+      AMI: 'ami-01ddabedd99da311e'
+    'ap-northeast-3':
+      AMI: 'ami-01b2cb75ad60685ea'
+    'ap-northeast-2':
+      AMI: 'ami-036f006e994752282'
+    'me-south-1':
+      AMI: 'ami-0c622a92dda7b6ea0'
+    'ap-northeast-1':
+      AMI: 'ami-0726c1c7e01759156'
+    'sa-east-1':
+      AMI: 'ami-01f19ebd61bd11278'
+    'ca-central-1':
+      AMI: 'ami-08b873ca28bee919b'
+    'ap-east-1':
+      AMI: 'ami-0dc0e75ebff016b38'
+    'ap-southeast-1':
+      AMI: 'ami-0b65860b1b39327d1'
+    'ap-southeast-2':
+      AMI: 'ami-00b8a691539cc0039'
+    'eu-central-1':
+      AMI: 'ami-0b67cc43bc64a6060'
+    'ap-southeast-3':
+      AMI: 'ami-07d9d45b01cb0b44e'
+    'us-east-1':
+      AMI: 'ami-01b20f5ea962e3fe7'
+    'us-east-2':
+      AMI: 'ami-07e19c485c7cf2266'
+    'us-west-1':
+      AMI: 'ami-0577aef94c154720e'
+    'us-west-2':
+      AMI: 'ami-07c73ee7f59efbb9a'
+  RegionMap202202181:
+    'af-south-1':
+      AMI: 'ami-0d7fe0087700f21a2'
+    'eu-north-1':
+      AMI: 'ami-0ba3efa3b01966bcb'
+    'ap-south-1':
+      AMI: 'ami-041aae81ed72817fd'
+    'eu-west-3':
+      AMI: 'ami-0299a65418e560db7'
+    'eu-west-2':
+      AMI: 'ami-0804a2711fa3726f3'
+    'eu-south-1':
+      AMI: 'ami-0420a01403c9572b9'
+    'eu-west-1':
+      AMI: 'ami-08754599965c30981'
+    'ap-northeast-3':
+      AMI: 'ami-038c5e963b706eb42'
+    'ap-northeast-2':
+      AMI: 'ami-0829f99d6eebc491a'
+    'me-south-1':
+      AMI: 'ami-0bff2679df4b5325d'
+    'ap-northeast-1':
+      AMI: 'ami-0a35e0f30c477c4ed'
+    'sa-east-1':
+      AMI: 'ami-0e75da331852510a4'
+    'ca-central-1':
+      AMI: 'ami-0e299df0d6042ab19'
+    'ap-east-1':
+      AMI: 'ami-0a9e4ecfcdcdf2ffe'
+    'ap-southeast-1':
+      AMI: 'ami-04b112e8ba800ec78'
+    'ap-southeast-2':
+      AMI: 'ami-08d76d04928793577'
+    'eu-central-1':
+      AMI: 'ami-0e06412e7a2ab14a2'
+    'ap-southeast-3':
+      AMI: 'ami-09beff734503fcd96'
+    'us-east-1':
+      AMI: 'ami-0e322da50e0e90e21'
+    'us-east-2':
+      AMI: 'ami-059e474a5b37e133b'
+    'us-west-1':
+      AMI: 'ami-07747ec74364622ce'
+    'us-west-2':
+      AMI: 'ami-00656d51d312f0dee'
+  RegionMap202202071:
+    'af-south-1':
+      AMI: 'ami-0e896f1f6fc1e3480'
+    'eu-north-1':
+      AMI: 'ami-0e3f1570eb0a9bc7f'
+    'ap-south-1':
+      AMI: 'ami-0dafa01c8100180f8'
+    'eu-west-3':
+      AMI: 'ami-05cb6b584fc3c8ac8'
+    'eu-west-2':
+      AMI: 'ami-098a393b6fa6e700b'
+    'eu-south-1':
+      AMI: 'ami-0f8415bea5b1e5fd1'
+    'eu-west-1':
+      AMI: 'ami-09d5dd12541e69077'
+    'ap-northeast-3':
+      AMI: 'ami-032e497ef5ca5794c'
+    'ap-northeast-2':
+      AMI: 'ami-0eb7a369386789460'
+    'me-south-1':
+      AMI: 'ami-05c00047b0c3b6ed1'
+    'ap-northeast-1':
+      AMI: 'ami-08d56ac42e2d4a08b'
+    'sa-east-1':
+      AMI: 'ami-088911543b10876a4'
+    'ca-central-1':
+      AMI: 'ami-040d8c460f4fc4a9f'
+    'ap-east-1':
+      AMI: 'ami-02333d201cff78886'
+    'ap-southeast-1':
+      AMI: 'ami-04fc979a55e14b094'
+    'ap-southeast-2':
+      AMI: 'ami-042c4533fa25c105a'
+    'eu-central-1':
+      AMI: 'ami-00e232b942edaf8f9'
+    'ap-southeast-3':
+      AMI: 'ami-00ec7b5e8882f3a58'
+    'us-east-1':
+      AMI: 'ami-038b3df3312ddf25d'
+    'us-east-2':
+      AMI: 'ami-07b1d7739c91ed3fc'
+    'us-west-1':
+      AMI: 'ami-0729cd65c1a99b0c9'
+    'us-west-2':
+      AMI: 'ami-090bc08d7ae1f3881'
+  RegionMap202112230:
+    'af-south-1':
+      AMI: 'ami-00ea1180c33766be8'
+    'eu-north-1':
+      AMI: 'ami-0a654623d21580ce0'
+    'ap-south-1':
+      AMI: 'ami-08181691f669ef7d2'
+    'eu-west-3':
+      AMI: 'ami-0984c6fda63734a94'
+    'eu-west-2':
+      AMI: 'ami-0cf5e24570c2b477b'
+    'eu-south-1':
+      AMI: 'ami-0b5b1b31fe90e8e71'
+    'eu-west-1':
+      AMI: 'ami-096f7a9ab885b50f4'
+    'ap-northeast-3':
+      AMI: 'ami-085322a66ec7b6645'
+    'ap-northeast-2':
+      AMI: 'ami-0781ede7661c6cd6e'
+    'me-south-1':
+      AMI: 'ami-00374a4f064f79cae'
+    'ap-northeast-1':
+      AMI: 'ami-0923d9a4d39b22a91'
+    'sa-east-1':
+      AMI: 'ami-050f2383ae3cd4bc2'
+    'ca-central-1':
+      AMI: 'ami-094d8d12ac8f29dc4'
+    'ap-east-1':
+      AMI: 'ami-003dcc837470176f6'
+    'ap-southeast-1':
+      AMI: 'ami-0a7587d725542cb4d'
+    'ap-southeast-2':
+      AMI: 'ami-0c1d83d75982f9cc0'
+    'eu-central-1':
+      AMI: 'ami-095e0f8062e0e8216'
+    'us-east-1':
+      AMI: 'ami-083602cee93914c0c'
+    'us-east-2':
+      AMI: 'ami-066157edddaec5e49'
+    'us-west-1':
+      AMI: 'ami-08629b3250aa07841'
+    'us-west-2':
+      AMI: 'ami-0ecf760d3d7e1fefa'
+  RegionMap202110050:
+    'af-south-1':
+      AMI: 'ami-070fc0373e6c22c97'
+    'eu-north-1':
+      AMI: 'ami-001c5f3c0a8b3f245'
+    'ap-south-1':
+      AMI: 'ami-041db4a969fe3eb68'
+    'eu-west-3':
+      AMI: 'ami-0da7ba92c3c072475'
+    'eu-west-2':
+      AMI: 'ami-074771aa49ab046e7'
+    'eu-south-1':
+      AMI: 'ami-07f0f6adab1daa189'
+    'eu-west-1':
+      AMI: 'ami-0ed961fa828560210'
+    'ap-northeast-3':
+      AMI: 'ami-026107638e7d599b1'
+    'ap-northeast-2':
+      AMI: 'ami-04e8dfc09b22389ad'
+    'me-south-1':
+      AMI: 'ami-0980753c2dfad9136'
+    'ap-northeast-1':
+      AMI: 'ami-02d36247c5bc58c23'
+    'sa-east-1':
+      AMI: 'ami-07983613af1a3ef44'
+    'ca-central-1':
+      AMI: 'ami-0d8ad3ab25e7abc51'
+    'ap-east-1':
+      AMI: 'ami-0d41b14f11c68e677'
+    'ap-southeast-1':
+      AMI: 'ami-07191cf2912e097a6'
+    'ap-southeast-2':
+      AMI: 'ami-04a81599b183d7908'
+    'eu-central-1':
+      AMI: 'ami-047e03b8591f2d48a'
+    'us-east-1':
+      AMI: 'ami-01cc34ab2709337aa'
+    'us-east-2':
+      AMI: 'ami-0f19d220602031aed'
+    'us-west-1':
+      AMI: 'ami-0e0bf4b3a0c0e0adc'
+    'us-west-2':
+      AMI: 'ami-0e5b6b6a9f3db6db8'
+  RegionMap202107212:
+    'af-south-1':
+      AMI: 'ami-0edec67949fd25461'
+    'eu-north-1':
+      AMI: 'ami-0d441f5643da997cb'
+    'ap-south-1':
+      AMI: 'ami-04db49c0fb2215364'
+    'eu-west-3':
+      AMI: 'ami-0d49cec198762b78c'
+    'eu-west-2':
+      AMI: 'ami-0d26eb3972b7f8c96'
+    'eu-south-1':
+      AMI: 'ami-0fce326033a239d55'
+    'eu-west-1':
+      AMI: 'ami-02b4e72b17337d6c1'
+    'ap-northeast-3':
+      AMI: 'ami-0e787554e61105680'
+    'ap-northeast-2':
+      AMI: 'ami-0a0de518b1fc4524c'
+    'me-south-1':
+      AMI: 'ami-004b77593bd476317'
+    'ap-northeast-1':
+      AMI: 'ami-09ebacdc178ae23b7'
+    'sa-east-1':
+      AMI: 'ami-0f8243a5175208e08'
+    'ca-central-1':
+      AMI: 'ami-02f84cf47c23f1769'
+    'ap-east-1':
+      AMI: 'ami-0a2115f8cc0a3956b'
+    'ap-southeast-1':
+      AMI: 'ami-0f511ead81ccde020'
+    'ap-southeast-2':
+      AMI: 'ami-0aab712d6363da7f9'
+    'eu-central-1':
+      AMI: 'ami-0453cb7b5f2b7fca2'
+    'us-east-1':
+      AMI: 'ami-0c2b8ca1dad447f8a'
+    'us-east-2':
+      AMI: 'ami-0443305dabd4be2bc'
+    'us-west-1':
+      AMI: 'ami-04b6c97b14c54de18'
+    'us-west-2':
+      AMI: 'ami-083ac7c7ecf9bb9b0'
+  RegionMap202106170:
+    'af-south-1':
+      AMI: 'ami-0a797f6e4448b3b6f'
+    'eu-north-1':
+      AMI: 'ami-0865a7423ddc6317c'
+    'ap-south-1':
+      AMI: 'ami-011c99152163a87ae'
+    'eu-west-3':
+      AMI: 'ami-0b2f05cf909299b7c'
+    'eu-west-2':
+      AMI: 'ami-033af134328c47f48'
+    'eu-south-1':
+      AMI: 'ami-0512b7a96307ce5c4'
+    'eu-west-1':
+      AMI: 'ami-0f89681a05a3a9de7'
+    'ap-northeast-3':
+      AMI: 'ami-09965f96c50f5a3d4'
+    'ap-northeast-2':
+      AMI: 'ami-086a3601cd7a83590'
+    'me-south-1':
+      AMI: 'ami-0a0ee2492a9f81d76'
+    'ap-northeast-1':
+      AMI: 'ami-06631ebafb3ae5d34'
+    'sa-east-1':
+      AMI: 'ami-0113db2202e3b45a5'
+    'ca-central-1':
+      AMI: 'ami-07d95746fec4b20a3'
+    'ap-east-1':
+      AMI: 'ami-036fe7ba35d60224e'
+    'ap-southeast-1':
+      AMI: 'ami-018c1c51c7a13e363'
+    'ap-southeast-2':
+      AMI: 'ami-05064bb33b40c33a2'
+    'eu-central-1':
+      AMI: 'ami-089b5384aac360007'
+    'us-east-1':
+      AMI: 'ami-0ab4d1e9cf9a1215a'
+    'us-east-2':
+      AMI: 'ami-0277b52859bac6f4b'
+    'us-west-1':
+      AMI: 'ami-02f24ad9a1d24a799'
+    'us-west-2':
+      AMI: 'ami-0721c9af7b9b75114'
   RegionMap202101260:
     'af-south-1':
       AMI: 'ami-0438616cef15ba2ca'
@@ -557,6 +1044,7 @@ Conditions:
   HasManagedPolicyArns: !Not [!Equals [!Ref ManagedPolicyArns, '']]
   HasBackupRetentionPeriod: !Not [!Equals [!Ref BackupRetentionPeriod, 0]]
   HasRestoreImageId: !Not [!Equals [!Ref RestoreImageId, '']]
+  HasMaintenanceWindowSchedule: !Not [!Equals [!Ref MaintenanceWindowSchedule, '']]
 Resources:
   RecordSet:
     Condition: HasZone
@@ -718,9 +1206,7 @@ Resources:
           - !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:managed-instance-inventory/${VirtualMachine}'
         - Effect: Allow
           Action: 'ssm:UpdateInstanceAssociationStatus'
-          Resource:
-          - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${VirtualMachine}'
-          - !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:association/${AssociationRunPatchBaselineScan}'
+          Resource: !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${VirtualMachine}'
   IAMPolicySSHAccess:
     Type: 'AWS::IAM::Policy'
     Condition: HasIAMUserSSHAccess
@@ -742,7 +1228,7 @@ Resources:
           - 'iam:GetSSHPublicKey'
           Resource:
           - !Sub 'arn:aws:iam::${AWS::AccountId}:user/*'
-  VirtualMachine: # TODO make IMDSv2 required (waits for https://github.com/aws-cloudformation/aws-cloudformation-coverage-roadmap/issues/655)
+  VirtualMachine:
     DependsOn: EIPAssociation
     Type: 'AWS::EC2::Instance'
     Metadata:
@@ -893,7 +1379,8 @@ Resources:
                 files:
                 - '/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json'
                 packages:
-                - cloudwatch
+                  yum:
+                  - cloudwatch
         ssh-access:
           files:
             '/opt/authorized_keys_command.sh':
@@ -994,6 +1481,8 @@ Resources:
       ImageId: !If [HasRestoreImageId, !Ref RestoreImageId, !FindInMap [!FindInMap [VersionMap, !Ref AmazonLinux2Version, Map], !Ref 'AWS::Region', AMI]]
       InstanceType: !Ref InstanceType
       KeyName: !If [HasKeyName, !Ref KeyName, !Ref 'AWS::NoValue']
+      MetadataOptions:
+        HttpTokens: required
       BlockDeviceMappings:
       - DeviceName: '/dev/xvda'
         Ebs:
@@ -1090,6 +1579,7 @@ Resources:
       - Name: path
         Value: '/'
   MaintenanceWindow:
+    Condition: HasMaintenanceWindowSchedule
     Type: 'AWS::SSM::MaintenanceWindow'
     Properties:
       AllowUnassociatedTargets: false
@@ -1099,6 +1589,7 @@ Resources:
       Schedule: !Ref MaintenanceWindowSchedule
       ScheduleTimezone: !Ref MaintenanceWindowScheduleTimezone
   MaintenanceWindowTarget:
+    Condition: HasMaintenanceWindowSchedule
     Type: 'AWS::SSM::MaintenanceWindowTarget'
     Properties:
       ResourceType: INSTANCE
@@ -1107,6 +1598,7 @@ Resources:
         Values: [!Ref VirtualMachine]
       WindowId: !Ref MaintenanceWindow
   MaintenanceWindowTask:
+    Condition: HasMaintenanceWindowSchedule
     Type: 'AWS::SSM::MaintenanceWindowTask'
     Properties:
       MaxConcurrency: '1'
@@ -1122,16 +1614,6 @@ Resources:
             Operation: [Install]
       TaskType: 'RUN_COMMAND'
       WindowId: !Ref MaintenanceWindow
-  AssociationRunPatchBaselineScan:
-    Type: 'AWS::SSM::Association'
-    Properties:
-      Name: 'AWS-RunPatchBaseline'
-      Parameters:
-        Operation: [Scan]
-      ScheduleExpression: 'rate(1 hour)'
-      Targets:
-      - Key: InstanceIds
-        Values: [!Ref VirtualMachine]
   BackupVault: # cannot be deleted with data
     Condition: HasBackupRetentionPeriod
     Type: 'AWS::Backup::BackupVault'

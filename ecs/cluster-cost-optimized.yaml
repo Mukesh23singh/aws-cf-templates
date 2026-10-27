@@ -174,48 +174,64 @@ Parameters:
     MaxValue: 3600
 Mappings:
   RegionMap:
-    'af-south-1':
-      ECSAMI: 'ami-0eb496c8d0c9abfd2'
-    'eu-north-1':
-      ECSAMI: 'ami-0fa6eea3ac394073e'
+    'ap-south-2':
+      ECSAMI: 'ami-07920be66ff9ab12e'
     'ap-south-1':
-      ECSAMI: 'ami-036eaa870decb368d'
-    'eu-west-3':
-      ECSAMI: 'ami-0e6d1d5809fc340aa'
-    'eu-west-2':
-      ECSAMI: 'ami-0cfa29782743cdde5'
+      ECSAMI: 'ami-0bb19f0a62c9ba776'
     'eu-south-1':
-      ECSAMI: 'ami-01b42cb991b3bbda6'
-    'eu-west-1':
-      ECSAMI: 'ami-05fece3209ae18166'
-    'ap-northeast-3':
-      ECSAMI: 'ami-0a92594429d4f6fa4'
-    'ap-northeast-2':
-      ECSAMI: 'ami-0125b4993023eaf1c'
-    'me-south-1':
-      ECSAMI: 'ami-05135af4797fb0a97'
-    'ap-northeast-1':
-      ECSAMI: 'ami-0a3769ff70e8ed2c7'
-    'sa-east-1':
-      ECSAMI: 'ami-02e1f6dc90eb8de9d'
+      ECSAMI: 'ami-02f0f5f7b3002130f'
+    'eu-south-2':
+      ECSAMI: 'ami-0fce31ee76e1e94d1'
+    'me-central-1':
+      ECSAMI: 'ami-05a4d8d0aeba4f58d'
+    'il-central-1':
+      ECSAMI: 'ami-0e94997d080e26c6d'
     'ca-central-1':
-      ECSAMI: 'ami-0a861b9a80035b882'
-    'ap-east-1':
-      ECSAMI: 'ami-022107441225782b7'
-    'ap-southeast-1':
-      ECSAMI: 'ami-0eb8001f83aa58b4c'
-    'ap-southeast-2':
-      ECSAMI: 'ami-0b3a132b2a4c91d72'
+      ECSAMI: 'ami-022318621048ad442'
     'eu-central-1':
-      ECSAMI: 'ami-01d359866d075d46c'
-    'us-east-1':
-      ECSAMI: 'ami-09a3cad575b7eabaa'
-    'us-east-2':
-      ECSAMI: 'ami-0ecb1ece84d43215d'
+      ECSAMI: 'ami-0c881b16b4817bb53'
+    'eu-central-2':
+      ECSAMI: 'ami-0cbfb1800efd37ef0'
     'us-west-1':
-      ECSAMI: 'ami-0ec4aded37931c8b5'
+      ECSAMI: 'ami-032e68d382698e558'
     'us-west-2':
-      ECSAMI: 'ami-0b58521c622a24969'
+      ECSAMI: 'ami-0e1c6ce4c5241cafb'
+    'af-south-1':
+      ECSAMI: 'ami-0eb6d0cf9f82fa4e8'
+    'eu-north-1':
+      ECSAMI: 'ami-09f2c9ca742afdff8'
+    'eu-west-3':
+      ECSAMI: 'ami-03aa0d7df552b14d6'
+    'eu-west-2':
+      ECSAMI: 'ami-034e45d0fddd372d3'
+    'eu-west-1':
+      ECSAMI: 'ami-06a8224da4db61217'
+    'ap-northeast-3':
+      ECSAMI: 'ami-017b752a2380eac44'
+    'ap-northeast-2':
+      ECSAMI: 'ami-08c70ad061eb4c7c5'
+    'me-south-1':
+      ECSAMI: 'ami-06d5e4f8f40be933f'
+    'ap-northeast-1':
+      ECSAMI: 'ami-0cd5f7cdb91b35390'
+    'sa-east-1':
+      ECSAMI: 'ami-0acd127172a0ae9b2'
+    'ap-east-1':
+      ECSAMI: 'ami-05d2c5db3a33b11b5'
+    'ca-west-1':
+      ECSAMI: 'ami-06198af79075cf83a'
+    'ap-southeast-1':
+      ECSAMI: 'ami-075d2e2f1a80495c3'
+    'ap-southeast-2':
+      ECSAMI: 'ami-017fdbe5fed8fb4d4'
+    'ap-southeast-3':
+      ECSAMI: 'ami-00bdc34763fb93f9a'
+    'ap-southeast-4':
+      ECSAMI: 'ami-0efdba26e26f00f1a'
+    'us-east-1':
+      ECSAMI: 'ami-0b789cb897e3bc975'
+    'us-east-2':
+      ECSAMI: 'ami-0d865164de9113b45'
 Conditions:
   HasPermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, '']]
   HasKeyName: !Not [!Equals [!Ref KeyName, '']]
@@ -1167,19 +1183,18 @@ Resources:
     Properties:
       Code:
         ZipFile: |
-          'use strict';
-          const AWS = require('aws-sdk');
-          const autoscaling = new AWS.AutoScaling({apiVersion: '2011-01-01'});
+          const { AutoScalingClient, ExecutePolicyCommand } = require('@aws-sdk/client-auto-scaling');
+          const autoscaling = new AutoScalingClient({apiVersion: '2011-01-01'});
           const sp = process.env.SCALING_POLICY_NAME;
           exports.handler = async function(event, context) {
             console.log(`Invoke: ${!JSON.stringify(event)}`);
-            const res = await autoscaling.executePolicy({PolicyName: sp, HonorCooldown: false, MetricValue: -1.0, BreachThreshold: -1.0}).promise();
+            const res = await autoscaling.send(new ExecutePolicyCommand({PolicyName: sp, HonorCooldown: false, MetricValue: -1.0, BreachThreshold: -1.0}));
             console.log('Executed scaling policy', res);
           }
       Handler: 'index.handler'
       MemorySize: 128
       Role: !GetAtt 'ScaleUpLambdaRole.Arn'
-      Runtime: 'nodejs12.x'
+      Runtime: 'nodejs22.x'
       Timeout: 60
       Environment:
         Variables:
@@ -1292,22 +1307,23 @@ Resources:
     Properties:
       Code:
         ZipFile: |
-          'use strict';
-          const AWS = require('aws-sdk');
-          const ecs = new AWS.ECS({apiVersion: '2014-11-13'});
-          const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
-          const asg = new AWS.AutoScaling({apiVersion: '2011-01-01'});
+          const { ECSClient, UpdateContainerInstancesStateCommand, ListTasksCommand, ListContainerInstancesCommand } = require('@aws-sdk/client-ecs');
+          const ecs = new ECSClient({apiVersion: '2014-11-13'});
+          const { SQSClient, SendMessageCommand } = require("@aws-sdk/client-sqs");
+          const sqs = new SQSClient({apiVersion: '2012-11-05'});
+          const { AutoScalingClient, CompleteLifecycleActionCommand, RecordLifecycleActionHeartbeatCommand } = require('@aws-sdk/client-auto-scaling');
+          const asg = new AutoScalingClient({apiVersion: '2011-01-01'});
           const cluster = process.env.CLUSTER;
           const queueUrl = process.env.QUEUE_URL;
           const drainingTimeout = process.env.DRAINING_TIMEOUT;
           async function getContainerInstanceArn(ec2InstanceId) {
             console.log(`getContainerInstanceArn(${[...arguments].join(', ')})`);
-            const listResult = await ecs.listContainerInstances({cluster: cluster, filter: `ec2InstanceId == '${ec2InstanceId}'`}).promise();
+            const listResult = await ecs.send(new ListContainerInstancesCommand({cluster: cluster, filter: `ec2InstanceId == '${ec2InstanceId}'`}));
             return listResult.containerInstanceArns[0];
           }
           async function drainInstance(ciArn) {
             console.log(`drainInstance(${[...arguments].join(', ')})`);
-            await ecs.updateContainerInstancesState({cluster: cluster, containerInstances: [ciArn], status: 'DRAINING'}).promise();
+            await ecs.send(new UpdateContainerInstancesStateCommand({cluster: cluster, containerInstances: [ciArn], status: 'DRAINING'}));
           }
           async function wait(ciArn, asgName, lchName, lcaToken, terminateTime) {
             console.log(`wait(${[...arguments].join(', ')})`);
@@ -1320,33 +1336,33 @@ Resources:
               LifecycleActionToken: lcaToken,
               TerminateTime: terminateTime
             };
-            await sqs.sendMessage({
+            await sqs.send(new SendMessageCommand({
               QueueUrl: queueUrl,
               DelaySeconds: 60,
               MessageBody: JSON.stringify(payload)
-            }).promise();
+            }));
           }
           async function countTasks(ciArn) {
             console.log(`countTasks(${[...arguments].join(', ')})`);
-            const listResult = await ecs.listTasks({cluster: cluster, containerInstance: ciArn}).promise();
+            const listResult = await ecs.send(new ListTasksCommand({cluster: cluster, containerInstance: ciArn}));
             return listResult.taskArns.length;
           }
           async function terminateInstance(asgName, lchName, lcaToken) {
             console.log(`terminateInstance(${[...arguments].join(', ')})`);
-            await asg.completeLifecycleAction({
+            await asg.send(new CompleteLifecycleActionCommand({
               AutoScalingGroupName: asgName,
               LifecycleHookName: lchName,
               LifecycleActionToken: lcaToken,
               LifecycleActionResult: 'CONTINUE'
-            }).promise();
+            }));
           }
           async function heartbeat(asgName, lchName, lcaToken) {
             console.log(`heartbeat(${[...arguments].join(', ')})`);
-            await asg.recordLifecycleActionHeartbeat({
+            await asg.send(new RecordLifecycleActionHeartbeatCommand({
               AutoScalingGroupName: asgName,
               LifecycleHookName: lchName,
               LifecycleActionToken: lcaToken
-            }).promise();
+            }));
           }
           exports.handler = async function(event, context) {
             console.log(`Invoke: ${JSON.stringify(event)}`);
@@ -1379,7 +1395,7 @@ Resources:
       Handler: 'index.handler'
       MemorySize: 128
       Role: !GetAtt 'DrainInstanceLambdaRole.Arn'
-      Runtime: 'nodejs12.x'
+      Runtime: 'nodejs22.x'
       Timeout: 30
       Environment:
         Variables:

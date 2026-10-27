@@ -8,7 +8,11 @@ import org.junit.Test;
 public class TestElasticsearch extends ACloudFormationTest {
 
     @Test
-    public void test() {
+    public void testVersion5() {
+        this.testVersion("5.6");
+    }
+
+    private void testVersion(final String version) {
         final Context context = new Context();
         final String vpcStackName = "vpc-2azs-" + this.random8String();
         final String clientStackName = "client-" + this.random8String();
@@ -25,7 +29,8 @@ public class TestElasticsearch extends ACloudFormationTest {
                             "state/elasticsearch.yaml",
                             new Parameter().withParameterKey("ParentVPCStack").withParameterValue(vpcStackName),
                             new Parameter().withParameterKey("ParentClientStack").withParameterValue(clientStackName),
-                            new Parameter().withParameterKey("DomainName").withParameterValue(stackName)
+                            new Parameter().withParameterKey("DomainName").withParameterValue(stackName),
+                            new Parameter().withParameterKey("ElasticsearchVersion").withParameterValue(version)
                     );
                     // TODO how can we check if this stack works? start a bastion host and try to connect?
                 } finally {

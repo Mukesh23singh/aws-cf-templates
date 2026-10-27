@@ -72,16 +72,7 @@ Parameters:
   EngineVersion:
     Description: 'Redis version'
     Type: String
-    Default: '5.0.0'
-    AllowedValues: # aws elasticache describe-cache-engine-versions --engine redis --query "CacheEngineVersions[].EngineVersion"
-    - '3.2.6' # 3.2.4 and 3.2.10 do not support encryption
-    - '4.0.10'
-    - '5.0.0'
-    - '5.0.3'
-    - '5.0.4'
-    - '5.0.5'
-    - '5.0.6'
-    - '6.x'
+    AllowedValues: ['7.0', '6.2', '6.0', '5.0.6', '5.0.5', '5.0.4', '5.0.3', '5.0.0', '4.0.10'] # aws elasticache describe-cache-engine-versions --engine redis --query "CacheEngineVersions[].EngineVersion"
   CacheNodeType:
     Description: 'The compute and memory capacity of the nodes in the node group (shard).'
     Type: 'String'
@@ -153,22 +144,24 @@ Parameters:
     MinValue: -1
 Mappings:
   EngineVersionMap:
-    '3.2.6':
-      CacheParameterGroupFamily: 'redis3.2'
-    '4.0.10':
-      CacheParameterGroupFamily: 'redis4.0'
-    '5.0.0':
-      CacheParameterGroupFamily: 'redis5.0'
-    '5.0.3':
+    '7.0':
+      CacheParameterGroupFamily: redis7
+    '6.2':
+      CacheParameterGroupFamily: 'redis6.x'
+    '6.0':
+      CacheParameterGroupFamily: 'redis6.x'
+    '5.0.6':
       CacheParameterGroupFamily: 'redis5.0'
     '5.0.4':
       CacheParameterGroupFamily: 'redis5.0'
-    '5.0.5':
+    '5.0.3':
       CacheParameterGroupFamily: 'redis5.0'
-    '5.0.6':
+    '5.0.0':
       CacheParameterGroupFamily: 'redis5.0'
-    '6.x':
-      CacheParameterGroupFamily: 'redis6.x'
+    '4.0.10':
+      CacheParameterGroupFamily: 'redis4.0'
+    '3.2.6':
+      CacheParameterGroupFamily: 'redis3.2'
 Conditions:
   HasKmsKey: !Not [!Equals [!Ref ParentKmsKeyStack, '']]
   HasZone: !Not [!Equals [!Ref ParentZoneStack, '']]
@@ -182,6 +175,8 @@ Conditions:
   HasSwapUsageThresholdAndAlertTopic: !And [!Not [!Equals [!Ref SwapUsageThreshold, '']], !Condition HasAlertTopic]
   HasEvictionsThresholdAndAlertTopic: !And [!Not [!Equals [!Ref EvictionsThreshold, '']], !Condition HasAlertTopic]
   HasReplicationLagThresholdAndAlertTopic: !And [!Not [!Equals [!Ref ReplicationLagThreshold, '']], !Condition HasAlertTopic]
+  HasClusterModeEnabled: !Not [!Equals [!Ref NumShards, 1]]
+  HasClusterModeDisabled: !Not [!Condition HasClusterModeEnabled]
 Resources:
   RecordSet:
     Condition: HasZone
@@ -195,7 +190,7 @@ Resources:
         HostedZoneName:
           'Fn::ImportValue': !Sub '${ParentZoneStack}-HostedZoneName'
       ResourceRecords:
-      - !GetAtt 'ReplicationGroup.PrimaryEndPoint.Address'
+      - !If [HasClusterModeEnabled, !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Address', !GetAtt 'ReplicationGroup.PrimaryEndPoint.Address']
       TTL: 60
       Type: CNAME
   CacheParameterGroup:
@@ -203,7 +198,7 @@ Resources:
     Properties:
       CacheParameterGroupFamily: !FindInMap [EngineVersionMap, !Ref EngineVersion, CacheParameterGroupFamily]
       Description: !Ref 'AWS::StackName'
-      Properties: {}
+      Properties: !If [HasClusterModeEnabled, {'cluster-enabled': 'yes'}, {}]
   CacheSubnetGroupName:
     Type: 'AWS::ElastiCache::SubnetGroup'
     Properties:
@@ -236,7 +231,7 @@ Resources:
   ReplicationGroup:
     DeletionPolicy: Snapshot
     UpdateReplacePolicy: Snapshot
-    Type: AWS::ElastiCache::ReplicationGroup
+    Type: 'AWS::ElastiCache::ReplicationGroup'
     Properties:
       ReplicationGroupDescription: !Ref 'AWS::StackName'
       AtRestEncryptionEnabled: true
@@ -481,15 +476,29 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-ClusterName'
   PrimaryEndPointAddress:
+    Condition: HasClusterModeDisabled
     Description: 'The DNS address of the primary read-write cache node.'
     Value: !GetAtt 'ReplicationGroup.PrimaryEndPoint.Address'
     Export:
       Name: !Sub '${AWS::StackName}-PrimaryEndPointAddress'
   PrimaryEndPointPort:
+    Condition: HasClusterModeDisabled
     Description: 'The port that the primary read-write cache engine is listening on.'
     Value: !GetAtt 'ReplicationGroup.PrimaryEndPoint.Port'
     Export:
       Name: !Sub '${AWS::StackName}-PrimaryEndPointPort'
+  ConfigurationEndPointAddress:
+    Condition: HasClusterModeEnabled
+    Description: 'The DNS address of the configuration node.'
+    Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Address'
+    Export:
+      Name: !Sub '${AWS::StackName}-ConfigurationEndPointAddress'
+  ConfigurationEndPointPort:
+    Condition: HasClusterModeEnabled
+    Description: 'The port of the configuration node.'
+    Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Port'
+    Export:
+      Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
   SecurityGroupId:
     Description: 'The security group used to manage access to Elasticache Redis.'
     Value: !Ref SecurityGroup

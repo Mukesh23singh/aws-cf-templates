@@ -144,48 +144,64 @@ Parameters:
     MaxValue: 4000
 Mappings:
   RegionMap:
-    'af-south-1':
-      AMI: 'ami-050312a64b6fd7ad9'
-    'eu-north-1':
-      AMI: 'ami-076c2ee28e3f9f38e'
+    'ap-south-2':
+      AMI: 'ami-0ab51832ad0357955'
     'ap-south-1':
-      AMI: 'ami-068d43a544160b7ef'
-    'eu-west-3':
-      AMI: 'ami-0575fc648136871a1'
-    'eu-west-2':
-      AMI: 'ami-01c835443b86fe988'
+      AMI: 'ami-0d6eab68a2aa4419b'
     'eu-south-1':
-      AMI: 'ami-0458384bd8b7c17d4'
-    'eu-west-1':
-      AMI: 'ami-0d712b3e6e1f798ef'
-    'ap-northeast-3':
-      AMI: 'ami-039fe1eba495c966f'
-    'ap-northeast-2':
-      AMI: 'ami-081511b9e3af53902'
-    'me-south-1':
-      AMI: 'ami-0a70a3362a013de22'
-    'ap-northeast-1':
-      AMI: 'ami-0bc8ae3ec8e338cbc'
-    'sa-east-1':
-      AMI: 'ami-0ca43e15336e41670'
+      AMI: 'ami-0c17f1490200f1b98'
+    'eu-south-2':
+      AMI: 'ami-0a8f09e218768d19d'
+    'me-central-1':
+      AMI: 'ami-07e91783d8a16e1f2'
+    'il-central-1':
+      AMI: 'ami-04ee358ea26a28621'
     'ca-central-1':
-      AMI: 'ami-09d75fc0586859f7a'
-    'ap-east-1':
-      AMI: 'ami-093d73f27794c5b1d'
-    'ap-southeast-1':
-      AMI: 'ami-0ba0ce0c11eb723a1'
-    'ap-southeast-2':
-      AMI: 'ami-0b3d7a5ecc2daba4c'
+      AMI: 'ami-06aa9bf8acd13295e'
     'eu-central-1':
-      AMI: 'ami-013fffc873b1eaa1c'
-    'us-east-1':
-      AMI: 'ami-0533f2ba8a1995cf9'
-    'us-east-2':
-      AMI: 'ami-089c6f2e3866f0f14'
+      AMI: 'ami-0b26dd07b92ba60b5'
+    'eu-central-2':
+      AMI: 'ami-08b6d5c9e5f65725a'
     'us-west-1':
-      AMI: 'ami-0a245a00f741d6301'
+      AMI: 'ami-0b301738029f9f48e'
     'us-west-2':
-      AMI: 'ami-05b622b5fa0269787'
+      AMI: 'ami-076e3756930a93fbb'
+    'af-south-1':
+      AMI: 'ami-04c86004365f50376'
+    'eu-north-1':
+      AMI: 'ami-05668410ca8bbacb3'
+    'eu-west-3':
+      AMI: 'ami-0e240183bb3096e67'
+    'eu-west-2':
+      AMI: 'ami-08ceb58c67626d304'
+    'eu-west-1':
+      AMI: 'ami-064857453c447bed5'
+    'ap-northeast-3':
+      AMI: 'ami-0806b1119517557f0'
+    'ap-northeast-2':
+      AMI: 'ami-00252d017d66f9cdd'
+    'me-south-1':
+      AMI: 'ami-05263463386d9b3a5'
+    'ap-northeast-1':
+      AMI: 'ami-08aa3b50f80805e20'
+    'sa-east-1':
+      AMI: 'ami-0cd4a737dad460342'
+    'ap-east-1':
+      AMI: 'ami-0a97c2677505cda75'
+    'ca-west-1':
+      AMI: 'ami-01c7593ec24183809'
+    'ap-southeast-1':
+      AMI: 'ami-083068d1edaf8af18'
+    'ap-southeast-2':
+      AMI: 'ami-094ff1d74ab636074'
+    'ap-southeast-3':
+      AMI: 'ami-08990191cc9b187ac'
+    'ap-southeast-4':
+      AMI: 'ami-0d9704c67691a5331'
+    'us-east-1':
+      AMI: 'ami-046eeba8a7f7bbefd'
+    'us-east-2':
+      AMI: 'ami-02c4f64d0cbab1731'
 Conditions:
   HasPermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, '']]
   HasKeyName: !Not [!Equals [!Ref KeyName, '']]
@@ -680,7 +696,7 @@ Resources:
           users:
             oauth2-proxy: {}
           sources:
-            '/opt/oauth2-proxy': 'https://github.com/oauth2-proxy/oauth2-proxy/releases/download/v7.1.2/oauth2-proxy-v7.1.2.linux-amd64.tar.gz'
+            '/opt/oauth2-proxy': 'https://github.com/oauth2-proxy/oauth2-proxy/releases/download/v7.5.1/oauth2-proxy-v7.5.1.linux-amd64.tar.gz'
           files:
             '/etc/oauth2-proxy.cfg':
               content: !Sub
@@ -702,6 +718,7 @@ Resources:
                   cookie_secret = "${CookieSecret}"
                   provider = "github"
                   github_org = "${GitHubOrganization}"
+                  scope = "user:email" # workaround https://github.com/oauth2-proxy/oauth2-proxy/issues/1669
               - {SkipAuthRegexBlock: !If [HasSkipAuthRegex, !Join ['', ['skip_auth_regex = ["', !Ref SkipAuthRegex, '"]']], '']}
               mode: '000644'
               owner: root
@@ -721,7 +738,7 @@ Resources:
                 User=oauth2-proxy
                 Group=oauth2-proxy
 
-                ExecStart=/opt/oauth2-proxy/oauth2-proxy-v7.1.2.linux-amd64/oauth2-proxy --config=/etc/oauth2-proxy.cfg
+                ExecStart=/opt/oauth2-proxy/oauth2-proxy-v7.5.1.linux-amd64/oauth2-proxy --config=/etc/oauth2-proxy.cfg
                 ExecReload=/bin/kill -HUP $MAINPID
 
                 KillMode=process

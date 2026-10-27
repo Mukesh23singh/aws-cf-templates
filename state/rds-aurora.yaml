@@ -72,24 +72,19 @@ Parameters:
     Description: 'Aurora engine and version'
     Type: String
     AllowedValues:
-    - '5.6.mysql-aurora.1.19.1' # aws rds describe-db-engine-versions --engine aurora --query 'DBEngineVersions[?contains(SupportedEngineModes,`provisioned`)].EngineVersion'
-    - '5.6.mysql_aurora.1.23.2'
-    - aurora
-    - '5.7.mysql-aurora.2.03.4' # aws rds describe-db-engine-versions --engine aurora-mysql --query 'DBEngineVersions[?contains(SupportedEngineModes,`provisioned`)].EngineVersion'
-    - '5.7.mysql-aurora.2.04.3'
-    - '5.7.mysql_aurora.2.09.2'
-    - 'aurora-mysql'
-    - 'aurora-postgresql-9.6.12' # aws rds describe-db-engine-versions --engine aurora-postgresql --query 'DBEngineVersions[?contains(SupportedEngineModes,`provisioned`)].EngineVersion'
-    - 'aurora-postgresql-9.6.19'
-    - 'aurora-postgresql-10.4'
-    - 'aurora-postgresql-10.5'
-    - 'aurora-postgresql-10.6'
-    - 'aurora-postgresql-10.7'
-    - 'aurora-postgresql-10.14'
+    - '8.0.mysql-aurora.3.03.0' # aws rds describe-db-engine-versions --engine aurora-mysql --query 'DBEngineVersions[?contains(SupportedEngineModes,`provisioned`)].EngineVersion'
+    - '8.0.mysql-aurora.3.02.1'
+    - '8.0.mysql-aurora.3.02.0'
+    - '5.7.mysql-aurora.2.11.1'
+    - 'aurora-postgresql-15.3' # aws rds describe-db-engine-versions --engine aurora-postgresql --query 'DBEngineVersions[?contains(SupportedEngineModes,`provisioned`)].EngineVersion'
+    - 'aurora-postgresql-14.6'
+    - 'aurora-postgresql-14.3'
+    - 'aurora-postgresql-13.9'
+    - 'aurora-postgresql-13.4'
+    - 'aurora-postgresql-12.13'
+    - 'aurora-postgresql-12.8'
+    - 'aurora-postgresql-11.18'
     - 'aurora-postgresql-11.9'
-    - 'aurora-postgresql-12.4'
-    - 'aurora-postgresql'
-    Default: aurora
   DBSnapshotIdentifier:
     Description: 'Optional identifier for the DB cluster snapshot from which you want to restore (leave blank to create an empty cluster).'
     Type: String
@@ -130,113 +125,89 @@ Parameters:
     Type: String
     Default: '09:54-10:24'
   PreferredMaintenanceWindow:
-    Description: The weekly time range (in UTC) during which system maintenance can occur.
+    Description: 'The weekly time range (in UTC) during which system maintenance can occur.'
     Type: String
     Default: 'sat:07:00-sat:07:30'
 Mappings:
   EngineMap:
-    aurora:
-      Engine: aurora
-      EngineVersion: '5.6.10a'
-      Port: 3306
-      ClusterParameterGroupFamily: 'aurora5.6'
-      ParameterGroupFamily: 'aurora5.6'
-    '5.6.mysql-aurora.1.19.1':
-      Engine: aurora
-      EngineVersion: '5.6.mysql_aurora.1.19.1'
-      Port: 3306
-      ClusterParameterGroupFamily: 'aurora5.6'
-      ParameterGroupFamily: 'aurora5.6'
-    '5.6.mysql-aurora.1.23.2':
-      Engine: aurora
-      EngineVersion: '5.6.mysql_aurora.1.23.2'
-      Port: 3306
-      ClusterParameterGroupFamily: 'aurora5.6'
-      ParameterGroupFamily: 'aurora5.6'
-    'aurora-mysql':
+    '8.0.mysql-aurora.3.03.0':
       Engine: 'aurora-mysql'
-      EngineVersion: '5.7.12'
+      EngineVersion: '8.0.mysql_aurora.3.03.0'
+      Port: 3306
+      ClusterParameterGroupFamily: 'aurora-mysql8.0'
+      ParameterGroupFamily: 'aurora-mysql8.0'
+    '8.0.mysql-aurora.3.02.1':
+      Engine: 'aurora-mysql'
+      EngineVersion: '8.0.mysql_aurora.3.02.1'
+      Port: 3306
+      ClusterParameterGroupFamily: 'aurora-mysql8.0'
+      ParameterGroupFamily: 'aurora-mysql8.0'
+    '8.0.mysql-aurora.3.02.0':
+      Engine: 'aurora-mysql'
+      EngineVersion: '8.0.mysql_aurora.3.02.0'
+      Port: 3306
+      ClusterParameterGroupFamily: 'aurora-mysql8.0'
+      ParameterGroupFamily: 'aurora-mysql8.0'
+    '5.7.mysql-aurora.2.11.1':
+      Engine: 'aurora-mysql'
+      EngineVersion: '5.7.mysql_aurora.2.11.1'
       Port: 3306
       ClusterParameterGroupFamily: 'aurora-mysql5.7'
       ParameterGroupFamily: 'aurora-mysql5.7'
-    '5.7.mysql-aurora.2.09.2':
-      Engine: 'aurora-mysql'
-      EngineVersion: '5.7.mysql_aurora.2.09.2'
-      Port: 3306
-      ClusterParameterGroupFamily: 'aurora-mysql5.7'
-      ParameterGroupFamily: 'aurora-mysql5.7'
-    '5.7.mysql-aurora.2.03.4':
-      Engine: 'aurora-mysql'
-      EngineVersion: '5.7.mysql_aurora.2.03.4'
-      Port: 3306
-      ClusterParameterGroupFamily: 'aurora-mysql5.7'
-      ParameterGroupFamily: 'aurora-mysql5.7'
-    '5.7.mysql-aurora.2.04.3':
-      Engine: 'aurora-mysql'
-      EngineVersion: '5.7.mysql_aurora.2.04.3'
-      Port: 3306
-      ClusterParameterGroupFamily: 'aurora-mysql5.7'
-      ParameterGroupFamily: 'aurora-mysql5.7'
-    'aurora-postgresql':
+    'aurora-postgresql-15.3':
       Engine: 'aurora-postgresql'
-      EngineVersion: '9.6.3'
+      EngineVersion: '15.3'
       Port: 5432
-      ClusterParameterGroupFamily: 'aurora-postgresql9.6'
-      ParameterGroupFamily: 'aurora-postgresql9.6'
-    'aurora-postgresql-9.6.19':
+      ClusterParameterGroupFamily: 'aurora-postgresql15'
+      ParameterGroupFamily: 'aurora-postgresql15'
+    'aurora-postgresql-14.6':
       Engine: 'aurora-postgresql'
-      EngineVersion: '9.6.19'
+      EngineVersion: '14.6'
       Port: 5432
-      ClusterParameterGroupFamily: 'aurora-postgresql9.6'
-      ParameterGroupFamily: 'aurora-postgresql9.6'
-    'aurora-postgresql-9.6.12':
+      ClusterParameterGroupFamily: 'aurora-postgresql14'
+      ParameterGroupFamily: 'aurora-postgresql14'
+    'aurora-postgresql-14.3':
       Engine: 'aurora-postgresql'
-      EngineVersion: '9.6.12'
+      EngineVersion: '14.3'
       Port: 5432
-      ClusterParameterGroupFamily: 'aurora-postgresql9.6'
-      ParameterGroupFamily: 'aurora-postgresql9.6'
-    'aurora-postgresql-10.4':
+      ClusterParameterGroupFamily: 'aurora-postgresql14'
+      ParameterGroupFamily: 'aurora-postgresql14'
+    'aurora-postgresql-13.9':
       Engine: 'aurora-postgresql'
-      EngineVersion: '10.4'
+      EngineVersion: '13.9'
       Port: 5432
-      ClusterParameterGroupFamily: 'aurora-postgresql10'
-      ParameterGroupFamily: 'aurora-postgresql10'
-    'aurora-postgresql-10.5':
+      ClusterParameterGroupFamily: 'aurora-postgresql13'
+      ParameterGroupFamily: 'aurora-postgresql13'
+    'aurora-postgresql-13.4':
       Engine: 'aurora-postgresql'
-      EngineVersion: '10.5'
+      EngineVersion: '13.4'
       Port: 5432
-      ClusterParameterGroupFamily: 'aurora-postgresql10'
-      ParameterGroupFamily: 'aurora-postgresql10'
-    'aurora-postgresql-10.6':
+      ClusterParameterGroupFamily: 'aurora-postgresql13'
+      ParameterGroupFamily: 'aurora-postgresql13'
+    'aurora-postgresql-12.13':
       Engine: 'aurora-postgresql'
-      EngineVersion: '10.6'
+      EngineVersion: '12.13'
       Port: 5432
-      ClusterParameterGroupFamily: 'aurora-postgresql10'
-      ParameterGroupFamily: 'aurora-postgresql10'
-    'aurora-postgresql-10.7':
+      ClusterParameterGroupFamily: 'aurora-postgresql12'
+      ParameterGroupFamily: 'aurora-postgresql12'
+    'aurora-postgresql-12.8':
       Engine: 'aurora-postgresql'
-      EngineVersion: '10.7'
+      EngineVersion: '12.8'
       Port: 5432
-      ClusterParameterGroupFamily: 'aurora-postgresql10'
-      ParameterGroupFamily: 'aurora-postgresql10'
-    'aurora-postgresql-10.14':
+      ClusterParameterGroupFamily: 'aurora-postgresql12'
+      ParameterGroupFamily: 'aurora-postgresql12'
+    'aurora-postgresql-11.18':
       Engine: 'aurora-postgresql'
-      EngineVersion: '10.14'
+      EngineVersion: '11.18'
       Port: 5432
-      ClusterParameterGroupFamily: 'aurora-postgresql10'
-      ParameterGroupFamily: 'aurora-postgresql10'
+      ClusterParameterGroupFamily: 'aurora-postgresql11'
+      ParameterGroupFamily: 'aurora-postgresql11'
     'aurora-postgresql-11.9':
       Engine: 'aurora-postgresql'
       EngineVersion: '11.9'
       Port: 5432
       ClusterParameterGroupFamily: 'aurora-postgresql11'
       ParameterGroupFamily: 'aurora-postgresql11'
-    'aurora-postgresql-12.4':
-      Engine: 'aurora-postgresql'
-      EngineVersion: '12.4'
-      Port: 5432
-      ClusterParameterGroupFamily: 'aurora-postgresql12'
-      ParameterGroupFamily: 'aurora-postgresql12'
 Conditions:
   HasSecret: !Not [!Equals [!Ref ParentSecretStack, '']]
   HasKmsKey: !Not [!Equals [!Ref ParentKmsKeyStack, '']]
@@ -245,7 +216,7 @@ Conditions:
   HasAlertTopic: !Not [!Equals [!Ref ParentAlertStack, '']]
   HasDBSnapshotIdentifier: !Not [!Equals [!Ref DBSnapshotIdentifier, '']]
   HasKmsKeyAndNotDBSnapshotIdentifier: !And [!Condition HasKmsKey, !Not [!Condition HasDBSnapshotIdentifier]]
-  HasEngineMySQL: !Or [!Equals [!FindInMap [EngineMap, !Ref Engine, Engine], 'aurora'], !Equals [!FindInMap [EngineMap, !Ref Engine, Engine], 'aurora-mysql']]
+  HasEngineMySQL: !Equals [!FindInMap [EngineMap, !Ref Engine, Engine], 'aurora-mysql']
 Resources:
   SecretTargetAttachment:
     Condition: HasSecret
@@ -326,6 +297,7 @@ Resources:
     Type: 'AWS::RDS::DBCluster'
     Properties:
       BackupRetentionPeriod: !Ref DBBackupRetentionPeriod
+      CopyTagsToSnapshot: true
       DatabaseName: !If [HasDBSnapshotIdentifier, !Ref 'AWS::NoValue', !Ref DBName]
       DBClusterParameterGroupName: !Ref DBClusterParameterGroup
       DBSubnetGroupName: !Ref DBSubnetGroup

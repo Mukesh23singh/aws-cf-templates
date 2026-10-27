@@ -98,12 +98,12 @@ Parameters:
     Default: '404'
     AllowedValues: ['200', '404']
   EnableRedirectSubDomainName:
-    Description: 'Deprecated since v12. Will be removed in v14. Use static-website/lambdaedge-index-document instead.'
+    Description: 'Enable secondary name redirecting to the primary name defined in parameter SubDomainNameWithDot (requires template static-website/lambdaedge-index-document)?'
     Type: String
     Default: 'false'
     AllowedValues: ['true', 'false']
   RedirectSubDomainNameWithDot:
-    Description: 'Deprecated since v12. Will be removed in v14. Use static-website/lambdaedge-index-document instead.'
+    Description: 'Optional secondary name redirecting to the primary name (requires EnableRedirectSubDomainName).'
     Type: String
     Default: ''
   CertificateType:
@@ -175,6 +175,11 @@ Resources:
       - '${SubDomainNameWithDot}${HostedZoneName}'
       - SubDomainNameWithDot: !Ref SubDomainNameWithDot
         HostedZoneName: {'Fn::ImportValue': !Sub '${ParentZoneStack}-HostedZoneName'}
+      PublicAccessBlockConfiguration: # AWS Foundational Security Best Practices v1.0.0 S3.8
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
   S3BucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -258,7 +263,7 @@ Resources:
           ViewerProtocolPolicy: 'redirect-to-https'
         DefaultRootObject: !If [HasDefaultRootObject, !Ref DefaultRootObject, !Ref 'AWS::NoValue']
         Enabled: true
-        HttpVersion: http2
+        HttpVersion: http2and3
         IPV6Enabled: true
         Logging: !If [HasS3Bucket, {Bucket: {'Fn::ImportValue': !Sub '${ParentS3StackAccessLog}-BucketDomainName'}, Prefix: !Ref 'AWS::StackName'}, !Ref 'AWS::NoValue']
         Origins:
@@ -270,7 +275,7 @@ Resources:
         ViewerCertificate:
           AcmCertificateArn: !If [HasCreateAcmCertificate, !Ref Certificate, !If [HasAcmCertificateArn, !Ref ExistingCertificate, !Ref 'AWS::NoValue']]
           IamCertificateId: !If [HasIamCertificateId, !Ref ExistingCertificate, !Ref 'AWS::NoValue']
-          MinimumProtocolVersion: 'TLSv1.1_2016'
+          MinimumProtocolVersion: 'TLSv1.2_2025'
           SslSupportMethod: 'sni-only'
         WebACLId: !If
         - HasWAF
@@ -387,7 +392,8 @@ Resources:
         Value: Global
       - Name: DistributionId
         Value: !Ref CloudFrontDistribution
-      EvaluationPeriods: 1
+      EvaluationPeriods: 5
+      DatapointsToAlarm: 2
       MetricName: 5xxErrorRate
       Namespace: 'AWS/CloudFront'
       OKActions:
